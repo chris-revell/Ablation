@@ -1,7 +1,16 @@
 name = "Ablation"
 authors = ["chris-revell"]
-[compat]
-julia = "1.11.5"
-DrWatson = "2.18.0"
+
 [deps]
+CircularArrays = "7a955b69-7140-5f4e-a0ed-f168c5e2e749"
+Colors = "5ae59095-9a9b-59fe-a467-6f913c188581"
+DiscreteCalculus = "c9ed59f3-1732-43eb-b4d1-f65c10d2ba12"
 DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
+InvertedIndices = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+VertexModel = "514bac63-329a-430c-b146-740bf51d96fc"
+
+[compat]
+DrWatson = "2.18.0"
+julia = "1.11.5"
