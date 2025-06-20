@@ -8,6 +8,7 @@ DiscreteCalculus = "c9ed59f3-1732-43eb-b4d1-f65c10d2ba12"
 DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
 InvertedIndices = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
 JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 VertexModel = "514bac63-329a-430c-b146-740bf51d96fc"
 
