@@ -96,6 +96,7 @@ ablatedGrownR = reinterpret(SVector{2,Float64}, integ2.u)
 params2, matrices2 = integ2.p
 ablatedGrownA = ablatedGrownA
 ablatedGrownB = ablatedGrownB
+ablatedGrownF = ablatedGrownB
 
 cellPolygons2 = findCellPolygons(ablatedGrownR, ablatedGrownA, ablatedGrownB)
 cellCentres2 = findCellCentresOfMass(ablatedGrownR, ablatedGrownA, ablatedGrownB)
@@ -112,7 +113,7 @@ display(fig)
 
 save("ablation.png", fig)
 
-jldsave(datadir("$(Dates.format(Dates.now(),"yy-mm-dd-HH-MM-SS"))_testSystem.jld2"); R, A, B, ablatedR, ablatedA, ablatedB, ablatedGrownR, ablatedGrownA, ablatedGrownB, ablatedCells)
+jldsave(datadir("$(Dates.format(Dates.now(),"yy-mm-dd-HH-MM-SS"))_testSystem.jld2"); R, A, B, ablatedR, ablatedA, ablatedB, ablatedGrownR, ablatedGrownA, ablatedGrownB, ablatedGrownF, ablatedCells)
 
 
 # ℒₓ = ablatedA*transpose(ablatedA) + transpose(ablatedB)*ablatedB

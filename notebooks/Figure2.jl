@@ -1,0 +1,191 @@
+using DrWatson
+using DiscreteCalculus
+using CairoMakie
+using StaticArrays
+using VertexModel
+using LinearAlgebra
+using SparseArrays
+using Random
+using Colors 
+using JLD2
+using Dates
+using CircularArrays
+using FromFile
+
+@from "$(srcdir("SingularValueDecomposition"))" using SingularValueDecomposition
+
+inputSystems = ["NoHole", "SingleHole", "DoubleHole", "Voronoi", "OldSystem"]
+
+for inputSystem in inputSystems
+    # Import system data
+    if inputSystem == "OldSystem"
+        conditionsDict    = load(datadir("referenceSystems", "oldPaper", "dataFinal.jld2"))
+        @unpack nVerts,nCells,nEdges,pressureExternal,γ,λ,viscousTimeScale,realTimetMax,tMax,dt,outputInterval,outputTotal,realCycleTime,t1Threshold = conditionsDict["params"]
+        matricesDict = load(datadir("referenceSystems", "oldPaper", "matricesFinal.jld2"))
+        @unpack A,B,C,R,F,cellAreas,cellPressures,cellTensions,cellPerimeters = matricesDict["matrices"]
+        cellEffectivePressures = cellPressures .- cellTensions.*cellPerimeters./(2.0.*cellAreas)
+        dropzeros!(A)
+        dropzeros!(B)
+        dropzeros!(C)
+    else 
+        fileName = datadir("referenceSystems", "$(inputSystem)_testSystem.jld2")
+        importedData = load(fileName)
+        R = importedData["R"]
+        A = importedData["A"]
+        B = importedData["B"]
+        F = importedData["F"]
+        cellTensions = importedData["cellTensions"]
+        cellPressures = importedData["cellPressures"]
+        cellPerimeters = importedData["cellPerimeters"]
+        cellAreas = importedData["cellAreas"]
+        cellEffectivePressures = cellPressures .+ cellTensions.*cellPerimeters./(2.0.*cellAreas)
+    end
+
+    nCells = size(B,1)
+    nEDges = size(B,2)
+    nVerts = size(A,2)
+    cellAreas = findCellAreas(R, A, B)
+    linkTriangles = findCellLinkTriangles(R, A, B)
+    linkTriangleAreas = findCellLinkTriangleAreas(R, A, B)
+    cellPolygons = findCellPolygons(R, A, B)
+    𝐡 = hNetwork(R, A, B, F)
+
+    curlᶜh = curlᶜ(R, A, B, 𝐡)
+    curlᶜhLims = (-maximum(abs.(curlᶜh)), maximum(abs.(curlᶜh)))
+    curlᵛh = curlᵛ(R, A, B, 𝐡)
+    curlᵛhLims = (-maximum(abs.(curlᵛh)), maximum(abs.(curlᵛh)))
+    divᶜh = divᶜ(R, A, B, 𝐡)
+    divᶜhLims = (-maximum(abs.(divᶜh)), maximum(abs.(divᶜh)))
+    divᵛh = divᵛ(R, A, B, 𝐡)
+    divᵛhLims = (-maximum(abs.(divᵛh)), maximum(abs.(divᵛh)))
+    cocurlᶜh = cocurlᶜ(R, A, B, 𝐡)
+    cocurlᶜhLims = (-maximum(abs.(cocurlᶜh)), maximum(abs.(cocurlᶜh)))
+    cocurlᵛh = cocurlᵛ(R, A, B, 𝐡)
+    cocurlᵛhLims = (-maximum(abs.(cocurlᵛh)), maximum(abs.(cocurlᵛh)))
+    codᶜh = codᶜ(R, A, B, 𝐡)
+    codᶜhLims = (-maximum(abs.(codᶜh)), maximum(abs.(codᶜh)))
+    codᵛh = codᵛ(R, A, B, 𝐡)
+    codᵛhLims = (-maximum(abs.(codᵛh)), maximum(abs.(codᵛh)))
+    # derivs = [curlᶜh, curlᵛh, divᶜh, divᵛh, cocurlᶜh, cocurlᵛh, codᶜh, codᵛh]
+
+    H = Diagonal(cellAreas)
+    E = Diagonal(linkTriangleAreas)
+
+    Lv = geometricLv(R, A, B)
+    Lf = geometricLf(R, A, B)
+    Lc = geometricLc(R, A, B)
+    Lt = geometricLt(R, A, B)
+
+    # ϕpar Lv -divᵛ
+    ϕpar, ϕparspectrum = singularValueDecomposition(Lv, -1.0.*divᵛh, E)
+    ϕparLims = (-maximum(abs.(ϕpar)), maximum(abs.(ϕpar)))
+
+    # ϕperp Lv -codᵛ
+    ϕperp, ϕperpspectrum = singularValueDecomposition(Lv, -1.0.*codᵛh, E)
+    ϕperpLims = (-maximum(abs.(ϕperp)), maximum(abs.(ϕperp)))
+
+    # upar Lf cocurlᶜ
+    upar, uparspectrum = singularValueDecomposition(Lf, cocurlᶜh, H)
+    uparLims = (-maximum(abs.(upar)), maximum(abs.(upar)))
+
+    # uperp Lf curlᶜ
+    uperp, uperpspectrum = singularValueDecomposition(Lf, curlᶜh, H)
+    uperpLims = (-maximum(abs.(uperp)), maximum(abs.(uperp)))
+
+    # ϕCapitalpar Lc -divᶜ
+    ϕCapitalpar, ϕCapitalparspectrum = singularValueDecomposition(Lc, -1.0.*divᶜh, H)
+    ϕCapitalparLims = (-maximum(abs.(ϕCapitalpar)), maximum(abs.(ϕCapitalpar)))
+
+    # ϕCapitalperp Lc -codᶜ
+    ϕCapitalperp, ϕCapitalperpspectrum = singularValueDecomposition(Lc, -1.0.*codᶜh, H)
+    ϕCapitalperpLims = (-maximum(abs.(ϕCapitalperp)), maximum(abs.(ϕCapitalperp)))
+
+    # Upar Lt cocurlᵛ
+    Upar, Uparspectrum = singularValueDecomposition(Lt, cocurlᵛh, E)
+    UparLims = (-maximum(abs.(Upar)), maximum(abs.(Upar)))
+
+    # Uperp Lt curlᵛ
+    Uperp, Uperpspectrum = singularValueDecomposition(Lt, curlᵛh, E)
+    UperpLims = (-maximum(abs.(Uperp)), maximum(abs.(Uperp)))
+
+    #%%
+
+    fig = Figure(size=(1000,2000))
+    axes = Axis[]
+
+    push!(axes, Axis(fig[1,1], aspect=DataAspect()))
+    for i=1:nCells
+        poly!(axes[end],cellPolygons[i],color=upar[i],colorrange=uparLims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
+    end
+    Colorbar(fig[1,2],limits=uparLims,colormap=:bwr)
+    Label(fig[1,1,Bottom()], L"u^\parallel", fontsize = 24)
+
+    push!(axes, Axis(fig[2,1], aspect=DataAspect()))
+    for k=1:nVerts
+        poly!(axes[end],linkTriangles[k],color=Upar[k],colorrange=UparLims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
+    end
+    for i=1:nCells
+        poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
+    end
+    Colorbar(fig[2,2],limits=UparLims,colormap=:bwr)
+    Label(fig[2,1,Bottom()], L"U^\parallel", fontsize = 24)
+
+    push!(axes, Axis(fig[3,1], aspect=DataAspect()))
+    for i=1:nCells
+        poly!(axes[end],cellPolygons[i],color=uperp[i],colorrange=uperpLims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
+    end
+    Colorbar(fig[3,2],limits=uperpLims,colormap=:bwr)
+    Label(fig[3,1,Bottom()], L"u^\perp", fontsize = 24)
+
+    push!(axes, Axis(fig[4,1], aspect=DataAspect()))
+    for k=1:nVerts
+        poly!(axes[end],linkTriangles[k],color=Uperp[k],colorrange=UperpLims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
+    end
+    for i=1:nCells
+        poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
+    end
+    Colorbar(fig[4,2],limits=UperpLims,colormap=:bwr)
+    Label(fig[4,1,Bottom()], L"U^\perp", fontsize = 24)
+
+
+
+    push!(axes, Axis(fig[1,3], aspect=DataAspect()))
+    for i=1:nCells
+        poly!(axes[end],cellPolygons[i],color=ϕCapitalpar[i],colorrange=ϕCapitalparLims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
+    end
+    Colorbar(fig[1,4],limits=ϕCapitalparLims,colormap=:bwr)
+    Label(fig[1,3,Bottom()], L"\Phi^\parallel", fontsize = 24)
+
+    push!(axes, Axis(fig[2,3], aspect=DataAspect()))
+    for k=1:nVerts
+        poly!(axes[end],linkTriangles[k],color=ϕpar[k],colorrange=ϕparLims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
+    end
+    for i=1:nCells
+        poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
+    end
+    Colorbar(fig[2,4],limits=ϕparLims,colormap=:bwr)
+    Label(fig[2,3,Bottom()], L"\phi^\parallel", fontsize = 24)
+
+    push!(axes, Axis(fig[3,3], aspect=DataAspect()))
+    for i=1:nCells
+        poly!(axes[end],cellPolygons[i],color=-ϕCapitalperp[i],colorrange=ϕCapitalperpLims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
+    end
+    Colorbar(fig[3,4],limits=ϕCapitalperpLims,colormap=:bwr)
+    Label(fig[3,3,Bottom()], L"-\Phi^\perp", fontsize = 24)
+
+    push!(axes, Axis(fig[4,3], aspect=DataAspect()))
+    for k=1:nVerts
+        poly!(axes[end],linkTriangles[k],color=-ϕperp[k],colorrange=ϕperpLims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
+    end
+    for i=1:nCells
+        poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
+    end
+    Colorbar(fig[4,4],limits=ϕperpLims,colormap=:bwr)
+    Label(fig[4,3,Bottom()], L"-\phi^\perp", fontsize = 24)
+
+    hidedecorations!.(axes)
+    hidespines!.(axes)
+    display(fig)
+
+    save(datadir("Figure2$(inputSystem)Potentials.png"), fig)
+end

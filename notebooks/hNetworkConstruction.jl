@@ -57,13 +57,29 @@ end
 # params, matrices = integ1.p
 # @unpack A, B = matrices
 # integ = vertexModel(initialSystem = "argument", R_in = R, A_in = matrices.A, B_in = matrices.B, nCycles=1.0, pressureExternal=0.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0, divisionToggle=0)
-integ = vertexModel(nRows=7, nCycles=1.0, pressureExternal=0.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0, divisionToggle=0)
+# integ = vertexModel(nRows=7, nCycles=1.0, pressureExternal=0.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0, divisionToggle=0)
 
-#%%
+# #%%
 
-R = reinterpret(SVector{2,Float64}, integ.u) 
-params, matrices = integ.p
-@unpack A, B, cellTensions, cellPressures, F = matrices
+# R = reinterpret(SVector{2,Float64}, integ.u) 
+# params, matrices = integ.p
+# @unpack A, B, cellTensions, cellPressures, F = matrices
+
+
+# Import system data
+fileName = datadir("DoubleHole_testSystem.jld2")
+importedData = load(fileName)
+R = importedData["ablatedGrownR"]
+A = importedData["ablatedGrownA"]
+B = importedData["ablatedGrownB"]
+F = importedData["ablatedGrownF"]
+cellTensions = importedData["ablatedGrownCellTensions"]
+cellPressures = importedData["ablatedGrownCellPressures"]
+cellPerimeters = importedData["ablatedGrownCellPerimeters"]
+cellAreas = importedData["ablatedGrownCellAreas"]
+cellEffectivePressures = cellPressures .+ cellTensions.*cellPerimeters./(2.0.*cellAreas)
+
+
 
 #%%
 
