@@ -48,17 +48,17 @@ dif = maximum(norm.(divᵛ(R, A, B)*𝐛 .-
     divᵛ(R, A, B, 𝐛)))
 println("divᵛ")
 @show dif
-dif = maximum(norm.(cogᵛ(R, A, B)*ϕ .-
-    cogᵛ(R, A, B, ϕ)))
-println("cogᵛ")
+dif = maximum(norm.(cogradᵛ(R, A, B)*ϕ .-
+    cogradᵛ(R, A, B, ϕ)))
+println("cogradᵛ")
 @show dif
 dif = maximum(norm.(cocurlᶜ(R, A, B)*𝐛 .-
     cocurlᶜ(R, A, B, 𝐛)))
 println("cocurlᶜ")
 @show dif
-dif = maximum(norm.(cogᶜ(R, A, B)*f .-
-    cogᶜ(R, A, B, f)))
-println("cogᶜ")
+dif = maximum(norm.(cogradᶜ(R, A, B)*f .-
+    cogradᶜ(R, A, B, f)))
+println("cogradᶜ")
 @show dif
 dif = maximum(norm.(cocurlᵛ(R, A, B)*𝐛 .-
     cocurlᵛ(R, A, B, 𝐛))[boundaryVertices.==0])
@@ -68,15 +68,15 @@ dif = maximum(norm.(corotᵛ(R, A, B)*ϕ .-
     corotᵛ(R, A, B, ϕ))[boundaryEdges.==0])
 println("corotᵛ")
 @show dif
-dif = maximum(norm.(codᶜ(R, A, B)*𝐛 .-
-    codᶜ(R, A, B, 𝐛)))
-println("codᶜ")
+dif = maximum(norm.(codivᶜ(R, A, B)*𝐛 .-
+    codivᶜ(R, A, B, 𝐛)))
+println("codivᶜ")
 @show dif
 dif = maximum(norm.(corotᶜ(R, A, B)*f .-
     corotᶜ(R, A, B, f)))
 println("corotᶜ")
 @show dif
-dif = maximum(norm.(codᵛ(R, A, B)*𝐛 .-
-    codᵛ(R, A, B, 𝐛)))
-println("codᵛ")
+dif = maximum(norm.(codivᵛ(R, A, B)*𝐛 .-
+    codivᵛ(R, A, B, 𝐛)))
+println("codivᵛ")
 @show dif
