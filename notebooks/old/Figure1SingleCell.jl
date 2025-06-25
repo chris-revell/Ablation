@@ -73,11 +73,11 @@ cocurlᶜh = cocurlᶜ(R, A, B, 𝐡)
 cocurlᶜhLims = (-maximum(abs.(cocurlᶜh)), maximum(abs.(cocurlᶜh)))
 cocurlᵛh = cocurlᵛ(R, A, B, 𝐡)
 cocurlᵛhLims = (-maximum(abs.(cocurlᵛh)), maximum(abs.(cocurlᵛh)))
-codᶜh = codᶜ(R, A, B, 𝐡)
-codᶜhLims = (-maximum(abs.(codᶜh)), maximum(abs.(codᶜh)))
-codᵛh = codᵛ(R, A, B, 𝐡)
-codᵛhLims = (-maximum(abs.(codᵛh)), maximum(abs.(codᵛh)))
-# derivs = [curlᶜh, curlᵛh, divᶜh, divᵛh, cocurlᶜh, cocurlᵛh, codᶜh, codᵛh]
+codivᶜh = codivᶜ(R, A, B, 𝐡)
+codivᶜhLims = (-maximum(abs.(codivᶜh)), maximum(abs.(codivᶜh)))
+codivᵛh = codivᵛ(R, A, B, 𝐡)
+codivᵛhLims = (-maximum(abs.(codivᵛh)), maximum(abs.(codivᵛh)))
+# derivs = [curlᶜh, curlᵛh, divᶜh, divᵛh, cocurlᶜh, cocurlᵛh, codivᶜh, codivᵛh]
 
 #%%
 
@@ -127,16 +127,16 @@ Colorbar(fig[2,4],limits=divᵛhLims,colormap=:bwr)
 Label(fig[2,3,Bottom()], L"-\{div^v \breve{h}\}_k", fontsize = 24)
 
 push!(axes, Axis(fig[3,3], aspect=DataAspect()))
-poly!(axes[end],cellPolygons[keptCell],color=codᶜh[1],colorrange=codᶜhLims,colormap=:bwr,strokewidth=1,strokecolor=(:black,0.25))
-Colorbar(fig[3,4], colorrange=codᶜhLims, colormap=:bwr)
+poly!(axes[end],cellPolygons[keptCell],color=codivᶜh[1],colorrange=codivᶜhLims,colormap=:bwr,strokewidth=1,strokecolor=(:black,0.25))
+Colorbar(fig[3,4], colorrange=codivᶜhLims, colormap=:bwr)
 Label(fig[3,3,Bottom()],L"\{cod^c h\}_i",fontsize = 24)
 
 push!(axes, Axis(fig[4,3], aspect=DataAspect()))
 for (i,k) in enumerate(keptVertices)
-    poly!(axes[end],linkTriangles[k],color=codᵛh[i],colorrange=codᵛhLims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
+    poly!(axes[end],linkTriangles[k],color=codivᵛh[i],colorrange=codivᵛhLims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
 end
 poly!(axes[end],cellPolygons[keptCell],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
-Colorbar(fig[4,4],limits=codᵛhLims,colormap=:bwr)
+Colorbar(fig[4,4],limits=codivᵛhLims,colormap=:bwr)
 Label(fig[4,3,Bottom()], L"\{cod^v \breve{h}\}_k", fontsize = 24)
 
 

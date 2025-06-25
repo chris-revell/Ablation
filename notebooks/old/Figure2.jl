@@ -62,11 +62,11 @@ for inputSystem in inputSystems
     cocurlᶜhLims = (-maximum(abs.(cocurlᶜh)), maximum(abs.(cocurlᶜh)))
     cocurlᵛh = cocurlᵛ(R, A, B, 𝐡)
     cocurlᵛhLims = (-maximum(abs.(cocurlᵛh)), maximum(abs.(cocurlᵛh)))
-    codᶜh = codᶜ(R, A, B, 𝐡)
-    codᶜhLims = (-maximum(abs.(codᶜh)), maximum(abs.(codᶜh)))
-    codᵛh = codᵛ(R, A, B, 𝐡)
-    codᵛhLims = (-maximum(abs.(codᵛh)), maximum(abs.(codᵛh)))
-    # derivs = [curlᶜh, curlᵛh, divᶜh, divᵛh, cocurlᶜh, cocurlᵛh, codᶜh, codᵛh]
+    codivᶜh = codivᶜ(R, A, B, 𝐡)
+    codivᶜhLims = (-maximum(abs.(codivᶜh)), maximum(abs.(codivᶜh)))
+    codivᵛh = codivᵛ(R, A, B, 𝐡)
+    codivᵛhLims = (-maximum(abs.(codivᵛh)), maximum(abs.(codivᵛh)))
+    # derivs = [curlᶜh, curlᵛh, divᶜh, divᵛh, cocurlᶜh, cocurlᵛh, codivᶜh, codivᵛh]
 
     H = Diagonal(cellAreas)
     E = Diagonal(linkTriangleAreas)
@@ -80,8 +80,8 @@ for inputSystem in inputSystems
     ϕpar, ϕparspectrum = singularValueDecomposition(Lv, -1.0.*divᵛh, E)
     ϕparLims = (-maximum(abs.(ϕpar)), maximum(abs.(ϕpar)))
 
-    # ϕperp Lv -codᵛ
-    ϕperp, ϕperpspectrum = singularValueDecomposition(Lv, -1.0.*codᵛh, E)
+    # ϕperp Lv -codivᵛ
+    ϕperp, ϕperpspectrum = singularValueDecomposition(Lv, -1.0.*codivᵛh, E)
     ϕperpLims = (-maximum(abs.(ϕperp)), maximum(abs.(ϕperp)))
 
     # upar Lf cocurlᶜ
@@ -96,8 +96,8 @@ for inputSystem in inputSystems
     ϕCapitalpar, ϕCapitalparspectrum = singularValueDecomposition(Lc, -1.0.*divᶜh, H)
     ϕCapitalparLims = (-maximum(abs.(ϕCapitalpar)), maximum(abs.(ϕCapitalpar)))
 
-    # ϕCapitalperp Lc -codᶜ
-    ϕCapitalperp, ϕCapitalperpspectrum = singularValueDecomposition(Lc, -1.0.*codᶜh, H)
+    # ϕCapitalperp Lc -codivᶜ
+    ϕCapitalperp, ϕCapitalperpspectrum = singularValueDecomposition(Lc, -1.0.*codivᶜh, H)
     ϕCapitalperpLims = (-maximum(abs.(ϕCapitalperp)), maximum(abs.(ϕCapitalperp)))
 
     # Upar Lt cocurlᵛ

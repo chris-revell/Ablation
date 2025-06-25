@@ -59,11 +59,11 @@ for inputSystem in inputSystems
     cocurlᶜhLims = (-maximum(abs.(cocurlᶜh)), maximum(abs.(cocurlᶜh)))
     cocurlᵛh = cocurlᵛ(R, A, B, 𝐡)
     cocurlᵛhLims = (-maximum(abs.(cocurlᵛh)), maximum(abs.(cocurlᵛh)))
-    codᶜh = codᶜ(R, A, B, 𝐡)
-    codᶜhLims = (-maximum(abs.(codᶜh)), maximum(abs.(codᶜh)))
-    codᵛh = codᵛ(R, A, B, 𝐡)
-    codᵛhLims = (-maximum(abs.(codᵛh)), maximum(abs.(codᵛh)))
-    # derivs = [curlᶜh, curlᵛh, divᶜh, divᵛh, cocurlᶜh, cocurlᵛh, codᶜh, codᵛh]
+    codivᶜh = codivᶜ(R, A, B, 𝐡)
+    codivᶜhLims = (-maximum(abs.(codivᶜh)), maximum(abs.(codivᶜh)))
+    codivᵛh = codivᵛ(R, A, B, 𝐡)
+    codivᵛhLims = (-maximum(abs.(codivᵛh)), maximum(abs.(codivᵛh)))
+    # derivs = [curlᶜh, curlᵛh, divᶜh, divᵛh, cocurlᶜh, cocurlᵛh, codivᶜh, codivᵛh]
 
     #%%
 
@@ -126,19 +126,19 @@ for inputSystem in inputSystems
 
     push!(axes, Axis(fig[3,3], aspect=DataAspect()))
     for i=1:nCells
-        poly!(axes[end],cellPolygons[i],color=codᶜh[i],colorrange=codᶜhLims,colormap=:bwr,strokewidth=1,strokecolor=(:black,0.25))
+        poly!(axes[end],cellPolygons[i],color=codivᶜh[i],colorrange=codivᶜhLims,colormap=:bwr,strokewidth=1,strokecolor=(:black,0.25))
     end
-    Colorbar(fig[3,4], colorrange=codᶜhLims, colormap=:bwr)
+    Colorbar(fig[3,4], colorrange=codivᶜhLims, colormap=:bwr)
     Label(fig[3,3,Bottom()],L"\{cod^c h\}_i",fontsize = 24)
 
     push!(axes, Axis(fig[4,3], aspect=DataAspect()))
     for k=1:nVerts
-        poly!(axes[end],linkTriangles[k],color=codᵛh[k],colorrange=codᵛhLims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
+        poly!(axes[end],linkTriangles[k],color=codivᵛh[k],colorrange=codivᵛhLims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
     end
     for i=1:nCells
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
-    Colorbar(fig[4,4],limits=codᵛhLims,colormap=:bwr)
+    Colorbar(fig[4,4],limits=codivᵛhLims,colormap=:bwr)
     Label(fig[4,3,Bottom()], L"\{cod^v \breve{h}\}_k", fontsize = 24)
 
 
