@@ -10,7 +10,7 @@ using Colors
 using JLD2
 using Dates
 
-@from "$(srcdir("SingularValueDecomposition.jl"))" using SingularValueDecomposition
+@from "$(srcdir("PenrosePseudoInversion.jl"))" using PenrosePseudoInversion
 
 inputSystems = ["NoHole", "SingleHole", "DoubleHole", "Voronoi"]#, "OldSystem"]
 
@@ -51,7 +51,7 @@ for inputSystem in inputSystems
     # @show findmax(innerProdsLdual)
     # @show eigenvalues_Ldual[1:2]
 
-    # x, xSpectrum = singularValueDecomposition(Lprimal, zeros(size(Lprimal,1)), spdiagm(Fⱼ))
+    # x, xSpectrum = penrosePseudoInversion(Lprimal, zeros(size(Lprimal,1)), spdiagm(Fⱼ))
     # @show x
 end
 

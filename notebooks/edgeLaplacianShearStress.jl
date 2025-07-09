@@ -39,7 +39,7 @@ end
     
 
 # Single hole 
-inFile = datadir("referenceSystems", "SingleHole_testSystem.jld2")
+inFile = datadir("referenceSystems", "SingleHole_testSystem5.jld2")
 importedData = load(inFile)
 @unpack R, A, B, F = importedData
 cellPolygons = findCellPolygons(R, A, B)
@@ -50,12 +50,12 @@ push!(axes, Axis(fig[1,1], aspect=DataAspect()))
 for i=1:size(B,1)
     poly!(axes[end], cellPolygons[i], color=ζᵢ[i], colorrange = clims, colormap = Reverse(:devon), strokecolor=(:black, 1.0), strokewidth=2)
 end
-Colorbar(fig[1,2], colorrange=clims, colormap=Reverse(:devon))
+Colorbar(fig[1,2], colorrange=clims, colormap=Reverse(:devon), height=Relative(0.8))
 # Label(fig[1,1,Bottom()], "1st eigenmode")
 Label(fig[1,1,Bottom()], L"(a)", fontsize=24)
 
 # Double hole 
-inFile = datadir("referenceSystems", "DoubleHole_testSystem.jld2")
+inFile = datadir("referenceSystems", "DoubleHole_testSystem5.jld2")
 importedData = load(inFile)
 @unpack R, A, B, F = importedData
 cellPolygons = findCellPolygons(R, A, B)
@@ -66,7 +66,7 @@ push!(axes, Axis(fig[1,3], aspect=DataAspect()))
 for i=1:size(B,1)
     poly!(axes[end], cellPolygons[i], color=ζᵢ[i], colorrange = clims, colormap = Reverse(:devon), strokecolor=(:black, 1.0), strokewidth=2)
 end
-Colorbar(fig[1,4], colorrange=clims, colormap=Reverse(:devon))
+Colorbar(fig[1,4], colorrange=clims, colormap=Reverse(:devon), height=Relative(0.8))
 # Label(fig[1,3,Bottom()], "1st eigenmode")
 Label(fig[1,3,Bottom()], L"(b)", fontsize=24)
 # 2nd eigenmode
@@ -76,7 +76,7 @@ push!(axes, Axis(fig[1,5], aspect=DataAspect()))
 for i=1:size(B,1)
     poly!(axes[end], cellPolygons[i], color=ζᵢ[i], colorrange = clims, colormap = Reverse(:devon), strokecolor=(:black, 1.0), strokewidth=2)
 end
-Colorbar(fig[1,6], colorrange=clims, colormap=Reverse(:devon))
+Colorbar(fig[1,6], colorrange=clims, colormap=Reverse(:devon), height=Relative(0.8))
 # Label(fig[1,5,Bottom()], "2nd eigenmode")
 Label(fig[1,5,Bottom()], L"(c)", fontsize=24)
 
@@ -84,7 +84,7 @@ Label(fig[1,5,Bottom()], L"(c)", fontsize=24)
 hidedecorations!.(axes)
 hidespines!.(axes)
 display(fig)
-save(datadir("edgeLaplacianShearStress_β=$(β).png"), fig)
+save(plotsdir("edgeLaplacianShearStress_β=$(β).png"), fig)
 
 
 

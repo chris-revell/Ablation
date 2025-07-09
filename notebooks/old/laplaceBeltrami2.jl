@@ -10,7 +10,7 @@ using Colors
 using JLD2
 using Dates
 
-@from "$(srcdir("SingularValueDecomposition.jl"))" using SingularValueDecomposition
+@from "$(srcdir("PenrosePseudoInversion.jl"))" using PenrosePseudoInversion
 
 inputSystems = ["NoHole", "SingleHole", "DoubleHole", "Voronoi"]#, "OldSystem"]
 

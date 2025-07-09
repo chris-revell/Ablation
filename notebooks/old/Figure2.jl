@@ -12,7 +12,7 @@ using Dates
 using CircularArrays
 using FromFile
 
-@from "$(srcdir("SingularValueDecomposition"))" using SingularValueDecomposition
+@from "$(srcdir("PenrosePseudoInversion"))" using PenrosePseudoInversion
 
 inputSystems = ["NoHole", "SingleHole", "DoubleHole", "Voronoi", "OldSystem"]
 
@@ -77,35 +77,35 @@ for inputSystem in inputSystems
     Lt = geometricLt(R, A, B)
 
     # ϕpar Lv -divᵛ
-    ϕpar, ϕparspectrum = singularValueDecomposition(Lv, -1.0.*divᵛh, E)
+    ϕpar, ϕparspectrum = penrosePseudoInversion(Lv, -1.0.*divᵛh, E)
     ϕparLims = (-maximum(abs.(ϕpar)), maximum(abs.(ϕpar)))
 
     # ϕperp Lv -codivᵛ
-    ϕperp, ϕperpspectrum = singularValueDecomposition(Lv, -1.0.*codivᵛh, E)
+    ϕperp, ϕperpspectrum = penrosePseudoInversion(Lv, -1.0.*codivᵛh, E)
     ϕperpLims = (-maximum(abs.(ϕperp)), maximum(abs.(ϕperp)))
 
     # upar Lf cocurlᶜ
-    upar, uparspectrum = singularValueDecomposition(Lf, cocurlᶜh, H)
+    upar, uparspectrum = penrosePseudoInversion(Lf, cocurlᶜh, H)
     uparLims = (-maximum(abs.(upar)), maximum(abs.(upar)))
 
     # uperp Lf curlᶜ
-    uperp, uperpspectrum = singularValueDecomposition(Lf, curlᶜh, H)
+    uperp, uperpspectrum = penrosePseudoInversion(Lf, curlᶜh, H)
     uperpLims = (-maximum(abs.(uperp)), maximum(abs.(uperp)))
 
     # ϕCapitalpar Lc -divᶜ
-    ϕCapitalpar, ϕCapitalparspectrum = singularValueDecomposition(Lc, -1.0.*divᶜh, H)
+    ϕCapitalpar, ϕCapitalparspectrum = penrosePseudoInversion(Lc, -1.0.*divᶜh, H)
     ϕCapitalparLims = (-maximum(abs.(ϕCapitalpar)), maximum(abs.(ϕCapitalpar)))
 
     # ϕCapitalperp Lc -codivᶜ
-    ϕCapitalperp, ϕCapitalperpspectrum = singularValueDecomposition(Lc, -1.0.*codivᶜh, H)
+    ϕCapitalperp, ϕCapitalperpspectrum = penrosePseudoInversion(Lc, -1.0.*codivᶜh, H)
     ϕCapitalperpLims = (-maximum(abs.(ϕCapitalperp)), maximum(abs.(ϕCapitalperp)))
 
     # Upar Lt cocurlᵛ
-    Upar, Uparspectrum = singularValueDecomposition(Lt, cocurlᵛh, E)
+    Upar, Uparspectrum = penrosePseudoInversion(Lt, cocurlᵛh, E)
     UparLims = (-maximum(abs.(Upar)), maximum(abs.(Upar)))
 
     # Uperp Lt curlᵛ
-    Uperp, Uperpspectrum = singularValueDecomposition(Lt, curlᵛh, E)
+    Uperp, Uperpspectrum = penrosePseudoInversion(Lt, curlᵛh, E)
     UperpLims = (-maximum(abs.(Uperp)), maximum(abs.(Uperp)))
 
     #%%
