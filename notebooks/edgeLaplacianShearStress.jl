@@ -85,6 +85,7 @@ hidedecorations!.(axes)
 hidespines!.(axes)
 display(fig)
 save(plotsdir("edgeLaplacianShearStress_β=$(β).png"), fig)
+save(plotsdir("edgeLaplacianShearStress_β=$(β).pdf"), fig)
 
 
 

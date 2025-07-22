@@ -52,12 +52,12 @@ end
 
 #%%
 
-integ1 = vertexModel(nRows=19, nCycles=1.0, pressureExternal=0.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0)
-R = reinterpret(SVector{2,Float64}, integ1.u) 
-params, matrices = integ1.p
-@unpack A, B = matrices
-integ = vertexModel(initialSystem = "argument", R_in = R, A_in = matrices.A, B_in = matrices.B, nCycles=1.0, pressureExternal=0.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0, divisionToggle=0)
-integ = vertexModel(nRows=5, nCycles=1.0, pressureExternal=0.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0, divisionToggle=1)
+# integ1 = vertexModel(nRows=19, nCycles=1.0, pressureExternal=0.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0)
+# R = reinterpret(SVector{2,Float64}, integ1.u) 
+# params, matrices = integ1.p
+# @unpack A, B = matrices
+# integ = vertexModel(initialSystem = "argument", R_in = R, A_in = matrices.A, B_in = matrices.B, nCycles=1.0, pressureExternal=0.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0, divisionToggle=0)
+integ = vertexModel(nRows=9, nCycles=1.0, pressureExternal=0.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0, divisionToggle=0)
 
 
 R = reinterpret(SVector{2,Float64}, integ.u) 
@@ -165,11 +165,11 @@ end
 scatter!(ax1, Point{2,Float64}.(cellCentres), color=:red)
 annotations!(ax1, string.(collect(1:nCells)), Point{2,Float64}.(cellCentres), color=:red)    
 scatter!(ax1, Point{2,Float64}.(edgeMidpoints), color=:green)
-annotations!(ax1, string.(collect(1:nEdges)), Point{2,Float64}.(edgeMidpoints), color=:green)    
+# annotations!(ax1, string.(collect(1:nEdges)), Point{2,Float64}.(edgeMidpoints), color=:green)    
 scatter!(ax1, Point{2,Float64}.(R), color=:blue)
 annotations!(ax1, string.(collect(1:nVerts)), Point{2,Float64}.(R), color=:blue)   
 scatter!(ax2, Point{2,Float64}.(h), color=:green)
-annotations!(ax2, string.(collect(1:length(h))), Point{2,Float64}.(h), color=:green)   
+# annotations!(ax2, string.(collect(1:length(h))), Point{2,Float64}.(h), color=:green)   
 save(datadir("output3.png"), fig)
 
 

@@ -94,20 +94,18 @@ display(fig)
 
 #%%
 
-integ2 = vertexModel(abstol = 1e-8,
-                    reltol = 1e-8,
-                    sstol = 1e-5,
+integ2 = vertexModel(
                     initialSystem="argument",
-                    divisionToggle=0,
-                    R_in=ablatedR,
-                    A_in=ablatedA,
-                    B_in=ablatedB,
+                    divisionToggle=1,
+                    R_in=R,
+                    A_in=A,
+                    B_in=B,
                     pressureExternal=0.0,
                     printToggle=1,
-                    frameDataToggle=0,
-                    frameImageToggle=0,
-                    videoToggle=0,
-                    termSteadyState=true,
+                    frameDataToggle=1,
+                    frameImageToggle=1,
+                    videoToggle=1,
+                    nCycles = 2
                 )
 
 #%%

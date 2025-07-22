@@ -19,7 +19,7 @@ inputSystems = ["NoHole", "SingleHole", "DoubleHole"]#, "Voronoi", "OldSystem"]
 suppressOrNot = "nosuppress"
 spokesOrNot = "nospokes"
 
-fig = Figure(size=(1500, 1500))
+fig = Figure(size=(1500, 1500), fontsize=24)
 axes = Axis[]
 individualLetters = string.(Char.(UInt8.(collect(97:97+26-1))))
 subfigureLabels = [L"($l)" for l in individualLetters]
@@ -61,19 +61,20 @@ for (col,inputSystem) in enumerate(inputSystems)
 
     curlᶜh = curlᶜ(R, A, B, 𝐡)
     curlᶜhMax = max(maximum(abs.(curlᶜh)), 0.0001)
-    curlᵛh = (spokesOrNot=="spokes" ? curlᵛspokes(R, A, B, 𝐡) : curlᵛ(R, A, B, 𝐡))
+    # curlᵛh = (spokesOrNot=="spokes" ? curlᵛspokes(R, A, B, 𝐡) : curlᵛ(R, A, B, 𝐡))
+    curlᵛh = curlᵛspokes(R, A, B, 𝐡)
     curlᵛhMax = max(maximum(abs.(curlᵛh)), 0.0001)
-    divᶜh = (suppressOrNot=="suppress" ? divᶜsuppress(R, A, B, 𝐡) : divᶜ(R, A, B, 𝐡))
+    divᶜh = divᶜ(R, A, B, 𝐡)
     divᶜhMax = max(maximum(abs.(divᶜh)), 0.0001)
-    divᵛh = divᵛ(R, A, B, 𝐡)
+    divᵛh = divᵛsuppress(R, A, B, 𝐡)
     divᵛhMax = max(maximum(abs.(divᵛh)), 0.0001)
     cocurlᶜh = cocurlᶜ(R, A, B, 𝐡)
     cocurlᶜhMax = max(maximum(abs.(cocurlᶜh)), 0.0001)
-    cocurlᵛh = (spokesOrNot=="spokes" ? cocurlᵛspokes(R, A, B, 𝐡) : cocurlᵛ(R, A, B, 𝐡))
+    cocurlᵛh = cocurlᵛspokes(R, A, B, 𝐡)
     cocurlᵛhMax = max(maximum(abs.(cocurlᵛh)), 0.0001)
-    codivᶜh = (suppressOrNot=="suppress" ? codivᶜsuppress(R, A, B, 𝐡) : codivᶜ(R, A, B, 𝐡))
+    codivᶜh = codivᶜ(R, A, B, 𝐡)
     codivᶜhMax = max(maximum(abs.(codivᶜh)), 0.0001)
-    codivᵛh = codivᵛ(R, A, B, 𝐡)
+    codivᵛh = codivᵛsuppress(R, A, B, 𝐡)
     codivᵛhMax = max(maximum(abs.(codivᵛh)), 0.0001)
     
     H = Diagonal(cellAreas)
@@ -107,7 +108,9 @@ for (col,inputSystem) in enumerate(inputSystems)
     # rot U = rotᵛ Uperp + corotᵛ Upar
 
     𝐡_hh = gradᵛ(R, A, ϕpar) + cogradᵛ(R, A, B, ϕperp) + rotᶜ(R, A, B, uperp) + corotᶜ(R, A, B, upar) 
+    𝐡_hh .= [𝐡_hh[j].-𝐡_hh[1] for j=1:size(B,2)]
     𝐇_hh = gradᶜ(R, A, B, ϕCapitalpar) + cogradᶜ(R, A, B, ϕCapitalperp) + rotᵛspokes(R, A, B, Uperp) + corotᵛspokes(R, A, B, Upar)
+    𝐇_hh .= [𝐇_hh[j].-𝐇_hh[1] for j=1:size(B,2)]
 
     push!(axes, Axis(fig[1,col], aspect=DataAspect()))
     for i=1:size(B,1)
@@ -119,11 +122,12 @@ for (col,inputSystem) in enumerate(inputSystems)
     push!(axes, Axis(fig[2,col], aspect=DataAspect()))
     scatter!(axes[end], Point{2,Float64}.(𝐡_hh), color=(:red, 0.55))
     scatter!(axes[end], Point{2,Float64}.(𝐇_hh), color=(:green, 0.55))
+    scatter!(axes[end], Point{2,Float64}.(𝐡), color=(:blue, 0.55))
     Label(fig[2,col, Bottom()], "h")
 
     push!(axes, Axis(fig[3,col], aspect=DataAspect()))
-    scatter!(axes[end], Point{2,Float64}.(𝐡_hh.-𝐡), color=(:red, 0.55))
-    scatter!(axes[end], Point{2,Float64}.(𝐇_hh.-𝐡), color=(:green, 0.55))
+    scatter!(axes[end], Point{2,Float64}.([𝐡_hh[j].-𝐡[j] for j=1:size(B,2)]), color=(:red, 0.55))
+    scatter!(axes[end], Point{2,Float64}.([𝐇_hh[j].-𝐡[j] for j=1:size(B,2)]), color=(:green, 0.55))
     Label(fig[3,col, Bottom()], "x")
 end
 

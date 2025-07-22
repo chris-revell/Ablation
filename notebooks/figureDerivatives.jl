@@ -16,19 +16,19 @@ inputSystems = ["NoHole", "SingleHole", "DoubleHole"]#, "Voronoi", "OldSystem"]
 suppressOrNot = "nosuppress"
 spokesOrNot = "spokes"
 
-fig = Figure(size=(2500, 1500))
+fig = Figure(size=(2500, 1500), fontsize=24)
 axes = Axis[]
 individualLetters = string.(Char.(UInt8.(collect(97:97+26-1))))
 subfigureLabels = [L"($l)" for l in individualLetters]
 
 gl0 = GridLayout(fig[1,1])
-Label(gl0[0,2], "", fontsize=24, rotation=π/2)
-Label(gl0[1,2], "Cells", fontsize=24, rotation=π/2)
-Label(gl0[2,2], "Vertices", fontsize=24, rotation=π/2)
-Label(gl0[3,2], "Cells", fontsize=24, rotation=π/2)
-Label(gl0[4,2], "Vertices", fontsize=24, rotation=π/2)
-Label(gl0[1:2,1], "Divergences", fontsize=24, rotation=π/2)
-Label(gl0[3:4,1], "Curls", fontsize=24, rotation=π/2)
+Label(gl0[0,2], "", fontsize=36, rotation=π/2)
+Label(gl0[1,2], "Cells", fontsize=36, rotation=π/2)
+Label(gl0[2,2], "Vertices", fontsize=36, rotation=π/2)
+Label(gl0[3,2], "Cells", fontsize=36, rotation=π/2)
+Label(gl0[4,2], "Vertices", fontsize=36, rotation=π/2)
+Label(gl0[1:2,1], "Divergences", fontsize=36, rotation=π/2)
+Label(gl0[3:4,1], "Curls", fontsize=36, rotation=π/2)
 rowsize!(gl0, 0, Relative(0.04))
 rowsize!(gl0, 1, Relative(0.24))
 rowsize!(gl0, 2, Relative(0.24))
@@ -70,40 +70,48 @@ for (col,inputSystem) in enumerate(inputSystems)
     cellPolygons = findCellPolygons(R, A, B)
     𝐡 = hNetwork(R, A, B, F)
     # 𝐡 = [SVector{2,Float64}(1.0,0.0) for _=1:J]
+
+    #%%
+    # N_v-N_e+N_c=1-n_h
+    # @show K-J+I
+    # if inputSystem == "NoHole"
+    #     @show 1
+    # elseif inputSystem == "SingleHole"
+    #     @show 0
+    # elseif inputSystem == "DoubleHole"
+    #     @show -1
+    # end
+    #%%
     
     boundaryVertices = findBoundaryVertices(A, B).==1
     boundaryCells = findBoundaryCells(B).==1
 
     curlᶜh = curlᶜ(R, A, B, 𝐡)
-    # curlᶜh[boundaryCells] .= 0
     curlᶜhMax = max(maximum(abs.(curlᶜh)), 0.0001)
     # curlᶜhLims = (-curlᶜhMax, curlᶜhMax)
-    curlᵛh = (spokesOrNot=="spokes" ? curlᵛspokes(R, A, B, 𝐡) : curlᵛ(R, A, B, 𝐡))
-    # curlᵛh[boundaryVertices] .= 0
+    # curlᵛh = (spokesOrNot=="spokes" ? curlᵛspokes(R, A, B, 𝐡) : curlᵛ(R, A, B, 𝐡))
+    curlᵛh = curlᵛspokes(R, A, B, 𝐡)
     curlᵛhMax = max(maximum(abs.(curlᵛh)), 0.0001)
     # curlᵛhLims = (-curlᵛhMax, curlᵛhMax)
-    divᶜh = (suppressOrNot=="suppress" ? divᶜsuppress(R, A, B, 𝐡) : divᶜ(R, A, B, 𝐡))
-    # divᶜh[boundaryCells] .= 0
+    # divᶜh = (suppressOrNot=="suppress" ? divᶜsuppress(R, A, B, 𝐡) : divᶜ(R, A, B, 𝐡))
+    divᶜh = divᶜ(R, A, B, 𝐡)
     divᶜhMax = max(maximum(abs.(divᶜh)), 0.0001)
     # divᶜhLims = (-divᶜhMax, divᶜhMax)
     divᵛh = divᵛsuppress(R, A, B, 𝐡)
-    # divᵛh[boundaryVertices] .= 0
     divᵛhMax = max(maximum(abs.(divᵛh)), 0.0001)
     # divᵛhLims = (-divᵛhMax, divᵛhMax)
     cocurlᶜh = cocurlᶜ(R, A, B, 𝐡)
-    # cocurlᶜh[boundaryCells] .= 0
     cocurlᶜhMax = max(maximum(abs.(cocurlᶜh)), 0.0001)
     # cocurlᶜhLims = (-cocurlᶜhMax, cocurlᶜhMax)
-    cocurlᵛh = (spokesOrNot=="spokes" ? cocurlᵛspokes(R, A, B, 𝐡) : cocurlᵛ(R, A, B, 𝐡))
-    # cocurlᵛh[boundaryVertices] .= 0
+    # cocurlᵛh = (spokesOrNot=="spokes" ? cocurlᵛspokes(R, A, B, 𝐡) : cocurlᵛ(R, A, B, 𝐡))
+    cocurlᵛh = cocurlᵛspokes(R, A, B, 𝐡)
     cocurlᵛhMax = max(maximum(abs.(cocurlᵛh)), 0.0001)
     # cocurlᵛhLims = (-cocurlᵛhMax, cocurlᵛhMax)
-    codivᶜh = (suppressOrNot=="suppress" ? codivᶜsuppress(R, A, B, 𝐡) : codivᶜ(R, A, B, 𝐡))
-    # codivᶜh[boundaryCells] .= 0
+    # codivᶜh = (suppressOrNot=="suppress" ? codivᶜsuppress(R, A, B, 𝐡) : codivᶜ(R, A, B, 𝐡))
+    codivᶜh = codivᶜ(R, A, B, 𝐡)
     codivᶜhMax = max(maximum(abs.(codivᶜh)), 0.0001)
     # codivᶜhLims = (-codivᶜhMax, codivᶜhMax)
     codivᵛh = codivᵛsuppress(R, A, B, 𝐡)
-    # codivᵛh[boundaryVertices] .= 0
     codivᵛhMax = max(maximum(abs.(codivᵛh)), 0.0001)
     # codivᵛhLims = (-codivᵛhMax, codivᵛhMax)
     
@@ -123,12 +131,12 @@ for (col,inputSystem) in enumerate(inputSystems)
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=cocurlᶜh[i],colorrange=row1Lims,colormap=:bwr,strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[1,1,Bottom()], L"\mathrm{cocurl}^c",fontsize=24)
+    Label(gl[1,1,Bottom()], L"\mathrm{cocurl}^c",fontsize=36)
     push!(axes, Axis(gl[1,2], aspect=DataAspect()))
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=-divᶜh[i],colorrange=row1Lims,colormap=:bwr,strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[1,2,Bottom()], L"-\mathrm{div}^c",fontsize=24)
+    Label(gl[1,2,Bottom()], L"-\mathrm{div}^c",fontsize=36)
     Colorbar(gl[1,3], colorrange=row1Lims, colormap=:bwr, height=Relative(0.8))
 
     push!(axes, Axis(gl[2,1], aspect=DataAspect()))
@@ -138,7 +146,7 @@ for (col,inputSystem) in enumerate(inputSystems)
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[2,1,Bottom()], L"-\mathrm{div}^v", fontsize=24)
+    Label(gl[2,1,Bottom()], L"-\mathrm{div}^v", fontsize=36)
     push!(axes, Axis(gl[2,2], aspect=DataAspect()))
     for k=1:K
         poly!(axes[end],linkTriangles[k],color=cocurlᵛh[k],colorrange=row2Lims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
@@ -146,19 +154,19 @@ for (col,inputSystem) in enumerate(inputSystems)
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[2,2,Bottom()], L"\mathrm{cocurl}^v", fontsize=24)
+    Label(gl[2,2,Bottom()], L"\mathrm{cocurl}^v", fontsize=36)
     Colorbar(gl[2,3],limits=row2Lims,colormap=:bwr, height=Relative(0.8))
 
     push!(axes, Axis(gl[3,1], aspect=DataAspect()))
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=curlᶜh[i],colorrange=row3Lims,colormap=:bwr,strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[3,1,Bottom()], L"\mathrm{curl}^c",fontsize=24)
+    Label(gl[3,1,Bottom()], L"\mathrm{curl}^c",fontsize=36)
     push!(axes, Axis(gl[3,2], aspect=DataAspect()))
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=codivᶜh[i],colorrange=row3Lims,colormap=:bwr,strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[3,2,Bottom()], L"\mathrm{codiv}^c",fontsize=24)
+    Label(gl[3,2,Bottom()], L"\mathrm{codiv}^c",fontsize=36)
     Colorbar(gl[3,3], colorrange=row3Lims, colormap=:bwr, height=Relative(0.8))
 
     push!(axes, Axis(gl[4,1], aspect=DataAspect()))
@@ -168,7 +176,7 @@ for (col,inputSystem) in enumerate(inputSystems)
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[4,1,Bottom()], L"\mathrm{codiv}^v", fontsize=24)
+    Label(gl[4,1,Bottom()], L"\mathrm{codiv}^v", fontsize=36)
     push!(axes, Axis(gl[4,2], aspect=DataAspect()))
     for k=1:K
         poly!(axes[end],linkTriangles[k],color=curlᵛh[k],colorrange=row4Lims,colormap=:bwr,strokewidth=1,strokecolor=(:white,0.0))
@@ -176,12 +184,12 @@ for (col,inputSystem) in enumerate(inputSystems)
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[4,2,Bottom()], L"\mathrm{curl}^v", fontsize=24)
+    Label(gl[4,2,Bottom()], L"\mathrm{curl}^v", fontsize=36)
     Colorbar(gl[4,3],limits=row4Lims,colormap=:bwr, height=Relative(0.8))
     
 
-    Label(gl[0,1], "Primal", fontsize=24)
-    Label(gl[0,2], "Dual", fontsize=24)
+    Label(gl[0,1], "Primal", fontsize=36)
+    Label(gl[0,2], "Dual", fontsize=36)
     
     rowsize!(gl, 0, Relative(0.04))
     rowsize!(gl, 1, Relative(0.24))
@@ -195,10 +203,10 @@ for (col,inputSystem) in enumerate(inputSystems)
     
 end
 
-Label(fig[2,2, Top()], L"(a)", fontsize=36)
-Label(fig[2,4, Top()], L"(b)", fontsize=36)
-Label(fig[2,6, Top()], L"(b)", fontsize=36)
-# Label(fig[2,1+5, Top()], "(c)", fontsize=36)
+Label(fig[2,2, Top()], L"(a)", fontsize=48)
+Label(fig[2,4, Top()], L"(b)", fontsize=48)
+Label(fig[2,6, Top()], L"(b)", fontsize=48)
+# Label(fig[2,1+5, Top()], "(c)", fontsize=48)
 rowsize!(fig.layout, 1, Relative(0.98))
 rowsize!(fig.layout, 2, Relative(0.02))
 
@@ -218,4 +226,7 @@ resize_to_layout!(fig)
 hidedecorations!.(axes)
 hidespines!.(axes)
 display(fig)
-save(plotsdir("figureDerivatives_$(suppressOrNot)_$(spokesOrNot).png"), fig)
+# save(plotsdir("figureDerivatives_$(suppressOrNot)_$(spokesOrNot).png"), fig)
+save(plotsdir("figureDerivatives.png"), fig)
+# save(plotsdir("figureDerivatives_$(suppressOrNot)_$(spokesOrNot).pdf"), fig)
+save(plotsdir("figureDerivatives.pdf"), fig)

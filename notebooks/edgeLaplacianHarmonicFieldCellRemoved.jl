@@ -13,8 +13,6 @@ using FromFile
 
 @from "$(srcdir("AblateCells.jl"))" using AblateCells
 
-α = 2.0
-β = 0.0
 ϵᵢ = SMatrix{2, 2, Float64}([
                 0.0 1.0
                 -1.0 0.0
@@ -52,7 +50,7 @@ dualBasisPerp = [ϵₖ*v for v in dualBasisParallel]
 
 #%%
 
-fig = Figure(size=(1500,600), fontsize=24)
+fig = Figure(size=(1000,500), fontsize=24)
 axes = Axis[]
 individualLetters = string.(Char.(UInt8.(collect(97:97+26-1))))
 subfigureLabels = [L"(%$l)" for l in individualLetters]
@@ -60,126 +58,89 @@ subfigureLabels = [L"(%$l)" for l in individualLetters]
 radii = norm.([𝐜ⱼ[j].-centralCellCOM for j=1:size(B2,2)])
 dummyDists = collect(maximum(radii)/100:maximum(radii)/100:maximum(radii))
 
-row = 1
-col = 1
-push!(axes, Axis(fig[1,1], aspect=DataAspect()))
 cellPolygons = findCellPolygons(R2, A2, B2)
-# getRandomColor(seed) = RGB(rand(MersenneTwister(seed),3)...)
-# colors = getRandomColor.(collect(1:size(B,2)))
-scatter!(axes[end], Point{2,Float64}(centralCellCOM), color=:red)
+edgeQuadrilaterals = findEdgeQuadrilaterals(R2, A2, B2)
+
+
+# Primal network 
+α = 1.0
+β = 0.0
+edgeVectorsPrimal = eigenvectors_Lprimal[1].*(α.*primalBasisParallel .+ β.*primalBasisPerp)
+edgeVectorsPrimalNorms = norm.(edgeVectorsPrimal)
+edgeVectorsPrimalNormsLims = (-2.0, log10(maximum(edgeVectorsPrimalNorms)))
+push!(axes, Axis(fig[1,1], aspect=DataAspect(), alignmode=Inside()))
+# scatter!(axes[end], Point{2,Float64}(centralCellCOM), color=:red)
+for j=1:size(B2,2)
+    poly!(axes[end], edgeQuadrilaterals[j], color=log10(edgeVectorsPrimalNorms[j]), strokecolor=(:white, 0.0), strokewidth=0, colormap=Reverse(:devon), colorrange=edgeVectorsPrimalNormsLims)
+end
 for i=1:size(B2,1)
-    poly!(axes[end], cellPolygons[i], color=(:black, 0.25), strokecolor=(:black, 1.0), strokewidth=1)
+    poly!(axes[end], cellPolygons[i], color=(:white, 0.0), strokecolor=(:black, 0.2), strokewidth=0.5)
 end
 hidedecorations!(axes[end])
 hidespines!(axes[end])
-Label(fig[row+1,col,Bottom()], popfirst!(subfigureLabels), fontsize=24) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
-
-col+=1
-# Primal network 
-α = 1.0
-β = 1.0
-push!(axes, Axis(fig[row,col], yscale=log10, xscale=log10, aspect=1))
-edgeVectors = eigenvectors_Lprimal[1].*(α.*primalBasisParallel .+ β.*primalBasisPerp)
-scatter!(axes[end], radii, norm.(edgeVectors), color=(:blue,0.1))
-lines!(axes[end], dummyDists, 1.0./dummyDists, color=(:black, 0.75), linestyle=:dash)
-lines!(axes[end], dummyDists, 1.0./(dummyDists).^2, color=(:black, 0.75), linestyle=:dash)
-lines!(axes[end], dummyDists, 1.0./(dummyDists).^3, color=(:black, 0.75), linestyle=:dash)
-axes[end].xlabel = L"r"
+Label(fig[2,1], popfirst!(subfigureLabels), fontsize=24) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
+Colorbar(fig[1,2], colorrange=edgeVectorsPrimalNormsLims, colormap=Reverse(:devon), height=Relative(0.8))
+push!(axes, Axis(fig[1,3], xscale=log10, yscale=log10, aspect=AxisAspect(1), alignmode=Inside()))
+scatter!(axes[end], radii, edgeVectorsPrimalNorms, color=(:blue,0.1))
+lines!(axes[end], dummyDists, 0.3./dummyDists, color=(:black, 0.75), linestyle=:dash)
+# lines!(axes[end], dummyDists, 1.0./(dummyDists).^2, color=(:black, 0.75), linestyle=:dash)
+lines!(axes[end], dummyDists, 0.3./(dummyDists).^3, color=(:black, 0.75), linestyle=:dash)
+ylims!(axes[end], (minimum(edgeVectorsPrimalNorms),1.0))
+xlims!(axes[end], (minimum(radii),maximum(radii)))
+axes[end].xlabel = L"r_j"
 axes[end].ylabel = L"\chi"
-Label(fig[row+1,col,Bottom()], popfirst!(subfigureLabels), fontsize=24) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
-# col += 1
-# α = 0.0
-# β = 2.0
-# push!(axes, Axis(fig[row,col], yscale=log10, xscale=log10))
-# edgeVectors = eigenvectors_Lprimal[1].*(α.*primalBasisParallel .+ β.*primalBasisPerp)
-# scatter!(axes[end], radii, norm.(edgeVectors), color=(:blue,0.1))
-# lines!(axes[end], dummyDists, 1.0./dummyDists, color=:black)
-# lines!(axes[end], dummyDists, 1.0./(dummyDists).^2, color=:black)
-# lines!(axes[end], dummyDists, 1.0./(dummyDists).^3, color=:black)
-# axes[end].xlabel = L"r"
-# axes[end].ylabel = L"\chi"
-# Label(fig[row+1,col,Bottom()], popfirst!(subfigureLabels), fontsize=24) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
+Label(fig[2,3], popfirst!(subfigureLabels), fontsize=24) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
 
 # Dual network 
-col += 1
-α = 1.0
-β = 1.0
-push!(axes, Axis(fig[row,col], yscale=log10, xscale=log10, aspect=1))
-edgeVectors = eigenvectors_Ldual[1].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
-scatter!(axes[end], radii[boundaryEdges.==0], norm.(edgeVectors[boundaryEdges.==0]), color=(:blue,0.1))
-scatter!(axes[end], radii[boundaryEdges.!=0], norm.(edgeVectors[boundaryEdges.!=0]), color=(:blue,0.1))
-lines!(axes[end], dummyDists, 1.0./dummyDists, color=(:black, 0.75), linestyle=:dash)
-lines!(axes[end], dummyDists, 1.0./(dummyDists).^2, color=(:black, 0.75), linestyle=:dash)
-lines!(axes[end], dummyDists, 1.0./(dummyDists).^3, color=(:black, 0.75), linestyle=:dash)
-axes[end].xlabel = L"r"
-axes[end].ylabel = L"\chi"
-Label(fig[row+1,col,Bottom()], popfirst!(subfigureLabels), fontsize=24) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
-
-# col += 1
 # α = 0.0
-# β = 2.0
-# push!(axes, Axis(fig[row,col], yscale=log10, xscale=log10))
-# edgeVectors = eigenvectors_Ldual[1].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
-# scatter!(axes[end], radii[boundaryEdges.==0], norm.(edgeVectors[boundaryEdges.==0]), color=(:blue,0.1))
-# scatter!(axes[end], radii[boundaryEdges.!=0], norm.(edgeVectors[boundaryEdges.!=0]), color=(:blue,0.1))
-# lines!(axes[end], dummyDists, 1.0./dummyDists, color=:black)
-# lines!(axes[end], dummyDists, 1.0./(dummyDists).^2, color=:black)
-# lines!(axes[end], dummyDists, 1.0./(dummyDists).^3, color=:black)
+# β = 1.0
+# edgeVectorsPrimal2 = eigenvectors_Lprimal[1].*(α.*primalBasisParallel .+ β.*primalBasisPerp)
+# edgeVectorsPrimalNorms2 = norm.(edgeVectorsPrimal2)
+# edgeVectorsPrimalNormsLims2 = (-2.0, log10(maximum(edgeVectorsPrimalNorms2)))
+
+# # edgeVectorsDual = eigenvectors_Ldual[1].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
+# # edgeVectorsDualNorms = norm.(edgeVectorsDual)
+# # edgeVectorsDualNormsLims = (-2.0, log10(maximum(edgeVectorsDualNorms)))
+# push!(axes, Axis(fig[1,2][1,1], aspect=DataAspect()))
+# # scatter!(axes[end], Point{2,Float64}(centralCellCOM), color=:red)
+# for j=1:size(B2,2)
+#     poly!(axes[end], edgeQuadrilaterals[j], color=log10(edgeVectorsPrimalNorms[j]), strokecolor=(:white, 0.0), strokewidth=0, colormap=Reverse(:devon), colorrange=edgeVectorsPrimalNormsLims)
+# end
+# for i=1:size(B2,1)
+#     poly!(axes[end], cellPolygons[i], color=(:white, 0.0), strokecolor=(:black, 0.2), strokewidth=0.5)
+# end
+# hidedecorations!(axes[end])
+# hidespines!(axes[end])
+# Label(fig[2,2,Bottom()], popfirst!(subfigureLabels), fontsize=24) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
+# Colorbar(fig[1,2][1,2], colorrange=edgeVectorsPrimalNormsLims, colormap=Reverse(:devon), height=Relative(0.8))
+
+# push!(axes, Axis(fig[3,2], yscale=log10, xscale=log10, aspect=1))
+# scatter!(axes[end], radii[boundaryEdges.==0], edgeVectorsPrimalNorms[boundaryEdges.==0], color=(:blue,0.1))
+# scatter!(axes[end], radii[boundaryEdges.!=0], edgeVectorsPrimalNorms[boundaryEdges.!=0], color=(:blue,0.1))
+# lines!(axes[end], dummyDists, 1.0./dummyDists, color=(:black, 0.75), linestyle=:dash)
+# # lines!(axes[end], dummyDists, 1.0./(dummyDists).^2, color=(:black, 0.75), linestyle=:dash)
+# lines!(axes[end], dummyDists, 1.0./(dummyDists).^3, color=(:black, 0.75), linestyle=:dash)
+# ylims!(axes[end], (minimum(edgeVectorsPrimalNorms),1.0))
+# xlims!(axes[end], (minimum(radii),maximum(radii)))
 # axes[end].xlabel = L"r"
 # axes[end].ylabel = L"\chi"
-# Label(fig[row+1,col,Bottom()], popfirst!(subfigureLabels), fontsize=24) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
+# Label(fig[4,2,Bottom()], popfirst!(subfigureLabels), fontsize=24) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
 
 
 rowsize!(fig.layout, 1, Relative(0.99))
 rowsize!(fig.layout, 2, Relative(0.01))
+colsize!(fig.layout, 1, Relative(0.5))
+colsize!(fig.layout, 2, Relative(0.1))
+colsize!(fig.layout, 3, Relative(0.4))
+
+colgap!(fig.layout, 1, Relative(-0.05))
+rowgap!(fig.layout, 1, Relative(-0.05))
+
+resize_to_layout!(fig)
 
 display(fig)
+
 save(plotsdir("edgeLaplacianHarmonicFieldCellRemoved.png"), fig)
+save(plotsdir("edgeLaplacianHarmonicFieldCellRemoved.pdf"), fig)
 
 
-# row = 1
-# col = 1
-# # Primal network 
-# α = 2.0
-# β = 0.0
-# push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-# poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
-# edgeVectors = eigenvectors_Lprimal[1].*(α.*primalBasisParallel .+ β.*primalBasisPerp)
-# arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
-# arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2)
-# Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
-# col += 1
-# α = 0.0
-# β = 2.0
-# push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-# poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
-# edgeVectors = eigenvectors_Lprimal[1].*(α.*primalBasisParallel .+ β.*primalBasisPerp)
-# arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
-# arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2)
-# Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
-# # Dual network 
-# col += 1
-# α = 2.0
-# β = 0.0
-# push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-# poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
-# edgeVectors = eigenvectors_Ldual[1].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
-# arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
-# arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[boundaryEdges.==0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.==0]), color=arrowColours[boundaryEdges.==0], linewidth=2)
-# arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[boundaryEdges.!=0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.!=0]), color=arrowColours[boundaryEdges.!=0], linewidth=2)
-# Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Single hole, 1st eigenmode, dual network, α=$(α), β=$(β)")
-# col += 1
-# α = 0.0
-# β = 2.0
-# push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-# poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
-# edgeVectors = eigenvectors_Ldual[1].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
-# arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
-# arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[boundaryEdges.==0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.==0]), color=arrowColours[boundaryEdges.==0], linewidth=2)
-# arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[boundaryEdges.!=0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.!=0]), color=arrowColours[boundaryEdges.!=0], linewidth=2)
-# Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Single hole, 1st eigenmode, dual network, α=$(α), β=$(β)")
-
-# hidedecorations!.(axes)
-# hidespines!.(axes)
-
-#%%
