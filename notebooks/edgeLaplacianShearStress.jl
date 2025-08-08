@@ -39,7 +39,7 @@ end
     
 
 # Single hole 
-inFile = datadir("referenceSystems", "SingleHole_testSystem5.jld2")
+inFile = datadir("referenceSystems", "SingleHole_testSystem.jld2")
 importedData = load(inFile)
 @unpack R, A, B, F = importedData
 cellPolygons = findCellPolygons(R, A, B)
@@ -55,7 +55,7 @@ Colorbar(fig[1,2], colorrange=clims, colormap=Reverse(:devon), height=Relative(0
 Label(fig[1,1,Bottom()], L"(a)", fontsize=24)
 
 # Double hole 
-inFile = datadir("referenceSystems", "DoubleHole_testSystem5.jld2")
+inFile = datadir("referenceSystems", "DoubleHole_testSystem.jld2")
 importedData = load(inFile)
 @unpack R, A, B, F = importedData
 cellPolygons = findCellPolygons(R, A, B)

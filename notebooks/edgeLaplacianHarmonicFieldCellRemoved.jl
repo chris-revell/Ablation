@@ -22,7 +22,7 @@ using FromFile
                 1.0 0.0
             ])
 
-inFile = datadir("referenceSystems", "Large_testSystem5.jld2")
+inFile = datadir("referenceSystems", "Large_testSystem.jld2")
 importedData = load(inFile)
 @unpack R, A, B, F = importedData
 

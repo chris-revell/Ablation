@@ -31,7 +31,7 @@ for (col,inputSystem) in enumerate(inputSystems)
         dropzeros!(B)
         dropzeros!(C)
     else 
-        fileName = datadir("referenceSystems", "$(inputSystem)_testSystem5.jld2")
+        fileName = datadir("referenceSystems", "$(inputSystem)_testSystem.jld2")
         importedData = load(fileName)
         R = importedData["R"]
         A = importedData["A"]
