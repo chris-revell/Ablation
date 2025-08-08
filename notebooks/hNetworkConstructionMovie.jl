@@ -57,13 +57,19 @@ end
 # params, matrices = integ1.p
 # @unpack A, B = matrices
 # integ = vertexModel(initialSystem = "argument", R_in = R, A_in = matrices.A, B_in = matrices.B, nCycles=1.0, pressureExternal=0.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0, divisionToggle=0)
-integ = vertexModel(nRows=9, nCycles=1.0, pressureExternal=0.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0, divisionToggle=0)
+
+# integ = vertexModel(nRows=9, nCycles=1.0, pressureExternal=0.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0, divisionToggle=0)
+# R = reinterpret(SVector{2,Float64}, integ.u) 
+# params, matrices = integ.p
+# @unpack A, B, cellTensions, cellPressures, F = matrices
 
 
-R = reinterpret(SVector{2,Float64}, integ.u) 
-params, matrices = integ.p
-@unpack A, B, cellTensions, cellPressures, F = matrices
-
+fileName = datadir("referenceSystems", "smallerSystem.jld2")
+importedData = load(fileName)
+R = importedData["R"]
+A = importedData["A"]
+B = importedData["B"]
+F = importedData["F"]
 
 # Import system data
 # fileName = datadir("DoubleHole_testSystem.jld2")
@@ -154,7 +160,7 @@ while length(traversedCells) < nCells
         push!(traversedCells, ii)
     end
 end
-save(datadir("output3.mp4"), mov)
+save(datadir("$(Dates.format(Dates.now(),"yy-mm-dd-HH-MM-SS"))_hNetwork.mp4"), mov)
 
 
 empty!(ax1)       
@@ -168,9 +174,9 @@ scatter!(ax1, Point{2,Float64}.(edgeMidpoints), color=:green)
 # annotations!(ax1, string.(collect(1:nEdges)), Point{2,Float64}.(edgeMidpoints), color=:green)    
 scatter!(ax1, Point{2,Float64}.(R), color=:blue)
 annotations!(ax1, string.(collect(1:nVerts)), Point{2,Float64}.(R), color=:blue)   
-scatter!(ax2, Point{2,Float64}.(h), color=:green)
+# scatter!(ax2, Point{2,Float64}.(h), color=:green)
 # annotations!(ax2, string.(collect(1:length(h))), Point{2,Float64}.(h), color=:green)   
-save(datadir("output3.png"), fig)
+save(datadir("$(Dates.format(Dates.now(),"yy-mm-dd-HH-MM-SS"))_hNetwork.png"), fig)
 
 
 
