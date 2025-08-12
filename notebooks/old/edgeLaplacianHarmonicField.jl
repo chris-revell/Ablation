@@ -47,7 +47,7 @@ dualBasisPerp = [ϵₖ*v for v in dualBasisParallel]
 row = 1
 col = 1
 # Primal network 
-α = 2.0
+α = 3.0
 β = 0.0
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
@@ -57,7 +57,7 @@ arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), col
 Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
 col += 1
 α = 0.0
-β = 2.0
+β = 3.0
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
 edgeVectors = eigenvectors_Lprimal[1].*(α.*primalBasisParallel .+ β.*primalBasisPerp)
@@ -66,7 +66,7 @@ arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), col
 Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
 # Dual network 
 col += 1
-α = 2.0
+α = 3.0
 β = 0.0
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
@@ -77,7 +77,7 @@ arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[boundaryEdges.!=0]), Vec{2,Float64}
 Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Single hole, 1st eigenmode, dual network, α=$(α), β=$(β)")
 col += 1
 α = 0.0
-β = 2.0
+β = 3.0
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
 edgeVectors = eigenvectors_Ldual[1].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
@@ -108,7 +108,7 @@ row = 2
 col = 1
 # Second eigenmode 
 # Primal network 
-α = 2.0
+α = 3.0
 β = 0.0
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
@@ -118,7 +118,7 @@ arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), col
 Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Double hole, 2nd eigenmode, primal network, α=$(α), β=$(β)")
 col += 1
 α = 0.0
-β = 2.0
+β = 3.0
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
 edgeVectors = eigenvectors_Lprimal[2].*(α.*primalBasisParallel .+ β.*primalBasisPerp)
@@ -129,7 +129,7 @@ Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Double h
 # First eigenmode 
 # Dual network 
 col += 1
-α = -2.0
+α = 3.0
 β = 0.0
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
@@ -140,7 +140,7 @@ arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[boundaryEdges.!=0]), Vec{2,Float64}
 Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Double hole, 1st eigenmode, dual network, α=$(α), β=$(β)")
 col += 1
 α = 0.0
-β = -2.0
+β = 3.0
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
 edgeVectors = eigenvectors_Ldual[1].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
@@ -153,7 +153,7 @@ row = 3
 col = 1
 # First eigenmode 
 # Primal network 
-α = 2.0
+α = 3.0
 β = 0.0
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
@@ -163,7 +163,7 @@ arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), col
 Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Double hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
 col += 1
 α = 0.0
-β = 2.0
+β = 3.0
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
 edgeVectors = eigenvectors_Lprimal[1].*(α.*primalBasisParallel .+ β.*primalBasisPerp)
@@ -174,7 +174,7 @@ Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Double h
 # Second eigenmode 
 # Dual network 
 col += 1
-α = 2.0
+α = 3.0
 β = 0.0
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
@@ -185,7 +185,7 @@ arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[boundaryEdges.!=0]), Vec{2,Float64}
 Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Double hole, 2nd eigenmode, dual network, α=$(α), β=$(β)")
 col += 1
 α = 0.0
-β = 2.0
+β = 3.0
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
 edgeVectors = eigenvectors_Ldual[2].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
@@ -198,4 +198,5 @@ Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Double h
 hidedecorations!.(axes)
 hidespines!.(axes)
 display(fig)
-save(datadir("edgeLaplacianEigenvectors.png"), fig)
+save(plotsdir("edgeLaplacianHarmonicField.png"), fig)
+save(plotsdir("edgeLaplacianHarmonicField.pdf"), fig)

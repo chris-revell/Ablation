@@ -14,10 +14,12 @@ using Dates
 # importedData = load(fileName)
 # @unpack R, A, B = importedData
 
-integ = vertexModel(nRows=5, nCycles=1.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0)
-R = reinterpret(SVector{2,Float64}, integ.u) 
-params, matrices = integ.p
-@unpack A, B = matrices
+# integ = vertexModel(nRows=5, nCycles=1.0, frameDataToggle=0, frameImageToggle=0, printToggle=0, videoToggle=0)
+# R = reinterpret(SVector{2,Float64}, integ.u) 
+# params, matrices = integ.p
+# @unpack A, B = matrices
+
+
 
 #%%
 
@@ -117,7 +119,7 @@ while length(testedCells) < nCells
     end
 end
 
-save(datadir("output.mp4"), mov)
+save(datadir("$(Dates.format(Dates.now(),"yy-mm-dd-HH-MM-SS"))_NeighbourStepper.mp4"), mov)
 
 #%%
 
