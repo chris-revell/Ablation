@@ -13,6 +13,7 @@ using FromFile
 using InvertedIndices
 
 @from "$(srcdir("AblateCells.jl"))" using AblateCells
+@from "$(srcdir("Stresses.jl"))" using Stresses
 
 ϵᵢ = SMatrix{2, 2, Float64}([
                 0.0 1.0
@@ -23,7 +24,8 @@ using InvertedIndices
                 1.0 0.0
             ])
 
-inFile = datadir("referenceSystems", "Large_testSystem.jld2")
+# inFile = datadir("referenceSystems", "Large_testSystem.jld2")
+inFile = datadir("referenceSystems", "quadraticPotentialNoPressure", "SingleHole_testSystem.jld2")
 importedData = load(inFile)
 @unpack R, A, B, F = importedData
 
@@ -32,23 +34,15 @@ cellCentres = findCellCentresOfMass(R, A, B)
 centralCell = findmin(norm.([cellCentres[i].-systemCOM for i=1:size(B,1)]))[2]
 centralCellCOM = cellCentres[centralCell]
 
-R2, A2, B2 = ablateCells(R, A, B, [centralCell])
+# R2, A2, B2 = ablateCells(R, A, B, [centralCell])
+
+R2 = R 
+A2 = A 
+B2 = B
+
 cellCentres2 = findCellCentresOfMass(R2, A2, B2)
 
 #%%
-
-function ζ(R, A, B, m, β)
-    Lprimal = edgeLaplacianPrimal(R, A, B)
-    w = transpose((eigen(Matrix(Lprimal))).vectors)
-    𝐭̂ = normalize.(findEdgeTangents(R, A))
-    ζᵐᵢ = zeros(size(B,1))
-    for i=1:size(B,1)
-       tmp = sum([B[i,j].*w[m, j].*(𝐭̂[j]*𝐭̂[j]') for j=1:size(B,2)])
-       tmpDet = det(tmp)
-       ζᵐᵢ[i] = β*sqrt(-tmpDet)
-    end
-    return ζᵐᵢ
-end 
     
 β = 1.0
 
@@ -59,7 +53,7 @@ axes = Axis[]
 individualLetters = string.(Char.(UInt8.(collect(97:97+26-1))))
 subfigureLabels = [L"(%$l)" for l in individualLetters]
 
-radii = norm.([cellCentres2[i].-centralCellCOM for i=1:size(B2,1)])
+radii = norm.([cellCentres2[i].-systemCOM for i=1:size(B2,1)])
 dummyDists = collect(maximum(radii)/100:maximum(radii)/100:maximum(radii))
 
 cellPolygons = findCellPolygons(R2, A2, B2)

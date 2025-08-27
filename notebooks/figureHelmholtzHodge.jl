@@ -11,15 +11,83 @@ using JLD2
 using Dates
 using CircularArrays
 using FromFile
+using InvertedIndices
 
+# @from "$(srcdir("TopologyFunctions.jl"))" using TopologyFunctions
+# @from "$(srcdir("GeometryFunctions.jl"))" using GeometryFunctions
+# @from "$(srcdir("OrderAroundCell.jl"))" using OrderAroundCell
 @from "$(srcdir("PenrosePseudoInversion.jl"))" using PenrosePseudoInversion
 
-inputSystems = ["NoHole", "SingleHole", "DoubleHole"]#, "Voronoi", "OldSystem"]
+# function hAroundCell!(ii, B, h, ϵ, F, currentNeighbourShell, traversedCells, traversedEdges, cellEdgeOrders, cellVertexOrders)
+#     # Find an edge belonging to cell ii and shared by any other cell in traversedCells
+#     if length(traversedCells)>0
+#         startEdge = (findnz(B[traversedCells, :])[2] ∩ findnz(B[ii, :])[1])[1]
+#     else 
+#         startEdge = cellEdgeOrders[ii][1]
+#     end
+#     # Find the index of this edge within the ordering of edges around cell ii 
+#     startInd = findall(x->x==startEdge, cellEdgeOrders[ii])[1]
+#     # Remember in clockwise ordering, cellEdgeOrders[i][1] precedes cellVertexOrders[1]
+#     for vertexInd = startInd:(startInd+length(cellVertexOrders[ii])-1)
+#         h[cellEdgeOrders[ii][vertexInd+1]] = h[cellEdgeOrders[ii][vertexInd]] .+ ϵ*F[cellVertexOrders[ii][vertexInd], ii]
+#         push!(traversedEdges, cellEdgeOrders[ii][vertexInd]) 
+#     end
+#     return nothing 
+# end
+
+# function hNetwork(R, A, B, F)
+#     I = size(B,1)
+#     J = size(B,2)
+#     K = size(A,2)
+#     boundaryEdges = findBoundaryEdges(B)
+#     boundaryCells = findnz(B[:, boundaryEdges.==1])[1]
+#     cellVertexOrders  = fill(CircularVector(Int64[]), I)
+#     cellEdgeOrders    = fill(CircularVector(Int64[]), I)
+#     for i = 1:I
+#         cellVertexOrders[i], cellEdgeOrders[i] = orderAroundCell(A, B, i)
+#     end
+#     ϵ = SMatrix{2, 2, Float64}([
+#             0.0 1.0
+#             -1.0 0.0
+#         ])
+#     Ā = abs.(A)
+#     B̄ = abs.(B)
+
+#     # Ensure we don't start with a boundary cell
+#     startCell = rand(collect(1:I)[Not(boundaryCells)])
+#     # startCell = 1 
+#     traversedCells = Int64[]
+#     traversedEdges = Int64[]
+#     cellNeighbourMatrix = B*transpose(B)
+#     h = fill(SVector{2, Float64}(zeros(2)), J)
+
+#     hAroundCell!(startCell, B, h, ϵ, F, Int64[], traversedCells, traversedEdges, cellEdgeOrders, cellVertexOrders)
+#     push!(traversedCells, startCell)
+#     while length(traversedCells) < I
+#         currentNeighbourShell = setdiff(findnz(cellNeighbourMatrix[:, traversedCells])[1], traversedCells)
+#         for ii in currentNeighbourShell
+#             hAroundCell!(ii, B, h, ϵ, F, currentNeighbourShell, traversedCells, traversedEdges, cellEdgeOrders, cellVertexOrders)
+#             push!(traversedCells, ii)
+#         end
+#     end
+
+#     for j=2:J
+#         h[j] = h[j] - h[1]
+#     end
+#     h[1] = @SVector zeros(2)
+
+#     return h
+# end
+
+
+
+
+inputSystems = ["NoHole"]#, "SingleHole", "DoubleHole"]#, "Voronoi", "OldSystem"]
 
 suppressOrNot = "nosuppress"
 spokesOrNot = "nospokes"
 
-fig = Figure(size=(1500, 1500), fontsize=24)
+fig = Figure(size=(500, 1500), fontsize=24)
 axes = Axis[]
 individualLetters = string.(Char.(UInt8.(collect(97:97+26-1))))
 subfigureLabels = [L"($l)" for l in individualLetters]
@@ -36,7 +104,7 @@ for (col,inputSystem) in enumerate(inputSystems)
         dropzeros!(B)
         dropzeros!(C)
     else 
-        fileName = datadir("referenceSystems", "$(inputSystem)_testSystem5.jld2")
+        fileName = datadir("referenceSystems", "$(inputSystem)_testSystem.jld2")
         importedData = load(fileName)
         R = importedData["R"]
         A = importedData["A"]
@@ -107,8 +175,8 @@ for (col,inputSystem) in enumerate(inputSystems)
     # rot u = rotᶜ uperp + corotᶜ upar 
     # rot U = rotᵛ Uperp + corotᵛ Upar
 
-    𝐡_hh = gradᵛ(R, A, ϕpar) + cogradᵛ(R, A, B, ϕperp) + rotᶜ(R, A, B, uperp) + corotᶜ(R, A, B, upar) 
-    𝐡_hh .= [𝐡_hh[j].-𝐡_hh[1] for j=1:size(B,2)]
+    # 𝐡_hh = gradᵛ(R, A, ϕpar) + cogradᵛ(R, A, B, ϕperp) + rotᶜ(R, A, B, uperp) + corotᶜ(R, A, B, upar) 
+    # 𝐡_hh .= [𝐡_hh[j].-𝐡_hh[1] for j=1:size(B,2)]
     𝐇_hh = gradᶜ(R, A, B, ϕCapitalpar) + cogradᶜ(R, A, B, ϕCapitalperp) + rotᵛspokes(R, A, B, Uperp) + corotᵛspokes(R, A, B, Upar)
     𝐇_hh .= [𝐇_hh[j].-𝐇_hh[1] for j=1:size(B,2)]
 
@@ -119,15 +187,29 @@ for (col,inputSystem) in enumerate(inputSystems)
     hidedecorations!(axes[end])
     hidespines!(axes[end])
     
+    boundaryEdges = findBoundaryEdges(B).==1
+
     push!(axes, Axis(fig[2,col], aspect=DataAspect()))
-    scatter!(axes[end], Point{2,Float64}.(𝐡_hh), color=(:red, 0.55))
-    scatter!(axes[end], Point{2,Float64}.(𝐇_hh), color=(:green, 0.55))
-    scatter!(axes[end], Point{2,Float64}.(𝐡), color=(:blue, 0.55))
+    # scatter!(axes[end], Point{2,Float64}.(𝐡_hh), color=(:red, 0.55))
+    scatter!(axes[end], Point{2,Float64}.(𝐇_hh[Not(boundaryEdges)]), color=(:green, 0.2))
+    scatter!(axes[end], Point{2,Float64}.(𝐇_hh[boundaryEdges]), color=(:green, 0.2), marker=:cross)
+
+    for i=1:I, k=1:K
+        k_js = findall(x->x!=0, A[:,k])
+        i_js = findall(x->x!=0, B[i,:])
+        js = k_js∩i_js
+        lines!(axes[end], Point{2,Float64}.(𝐇_hh[js]))
+    end
+
+
+    # scatter!(axes[end], Point{2,Float64}.(𝐡[Not(boundaryEdges)]), color=(:blue, 0.2))
+    # scatter!(axes[end], Point{2,Float64}.(𝐡[boundaryEdges]), color=(:blue, 0.2), marker=:cross)
     Label(fig[2,col, Bottom()], "h")
 
     push!(axes, Axis(fig[3,col], aspect=DataAspect()))
-    scatter!(axes[end], Point{2,Float64}.([𝐡_hh[j].-𝐡[j] for j=1:size(B,2)]), color=(:red, 0.55))
-    scatter!(axes[end], Point{2,Float64}.([𝐇_hh[j].-𝐡[j] for j=1:size(B,2)]), color=(:green, 0.55))
+    # scatter!(axes[end], Point{2,Float64}.([𝐡_hh[j].-𝐡[j] for j=1:size(B,2)]), color=(:red, 0.55))
+    scatter!(axes[end], Point{2,Float64}.(([𝐇_hh[j].-𝐡[j] for j=1:size(B,2)])[Not(boundaryEdges)]), color=(:green, 0.2))
+    scatter!(axes[end], Point{2,Float64}.(([𝐇_hh[j].-𝐡[j] for j=1:size(B,2)])[boundaryEdges]), color=(:green, 0.2), marker=:cross)
     Label(fig[3,col, Bottom()], "x")
 end
 

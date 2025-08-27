@@ -10,6 +10,7 @@ using Colors
 using JLD2
 using Dates
 using CircularArrays
+using Statistics
 
 inputSystems = ["NoHole", "SingleHole", "DoubleHole"]#, "Voronoi", "OldSystem"]
 
@@ -48,7 +49,7 @@ for (col,inputSystem) in enumerate(inputSystems)
         dropzeros!(B)
         dropzeros!(C)
     else 
-        fileName = datadir("referenceSystems", "$(inputSystem)_testSystem.jld2")
+        fileName = datadir("referenceSystems", "quadraticPotentialNoPressure", "$(inputSystem)_testSystem.jld2")
         importedData = load(fileName)
         R = importedData["R"]
         A = importedData["A"]
@@ -95,16 +96,20 @@ for (col,inputSystem) in enumerate(inputSystems)
     # curlᵛhLims = (-curlᵛhMax, curlᵛhMax)
     # divᶜh = (suppressOrNot=="suppress" ? divᶜsuppress(R, A, B, 𝐡) : divᶜ(R, A, B, 𝐡))
     divᶜh = divᶜ(R, A, B, 𝐡)
+    @show mean(divᶜh)
     divᶜhMax = max(maximum(abs.(divᶜh)), 0.0001)
     # divᶜhLims = (-divᶜhMax, divᶜhMax)
     divᵛh = divᵛsuppress(R, A, B, 𝐡)
+    @show mean(divᵛh)
     divᵛhMax = max(maximum(abs.(divᵛh)), 0.0001)
     # divᵛhLims = (-divᵛhMax, divᵛhMax)
     cocurlᶜh = cocurlᶜ(R, A, B, 𝐡)
+    @show mean(cocurlᶜh)
     cocurlᶜhMax = max(maximum(abs.(cocurlᶜh)), 0.0001)
     # cocurlᶜhLims = (-cocurlᶜhMax, cocurlᶜhMax)
     # cocurlᵛh = (spokesOrNot=="spokes" ? cocurlᵛspokes(R, A, B, 𝐡) : cocurlᵛ(R, A, B, 𝐡))
     cocurlᵛh = cocurlᵛspokes(R, A, B, 𝐡)
+    @show mean(cocurlᵛh)
     cocurlᵛhMax = max(maximum(abs.(cocurlᵛh)), 0.0001)
     # cocurlᵛhLims = (-cocurlᵛhMax, cocurlᵛhMax)
     # codivᶜh = (suppressOrNot=="suppress" ? codivᶜsuppress(R, A, B, 𝐡) : codivᶜ(R, A, B, 𝐡))
