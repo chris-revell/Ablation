@@ -17,8 +17,9 @@ using OrdinaryDiffEq
 
 #%%
 
+subDir = "quadraticPotentialWithPressure"
 systems = ["NoHole", "SingleHole", "DoubleHole", "Large"]
-system = systems[1]
+system = systems[4]
 
 #%%
 integ1 = vertexModel(abstol = 1e-9,
@@ -29,7 +30,7 @@ integ1 = vertexModel(abstol = 1e-9,
                     frameDataToggle=0,
                     frameImageToggle=0,
                     videoToggle=0,
-                    setRandomSeed=1234567,
+                    setRandomSeed=12345,
                     divisionToggle=1,
                     pressureExternal=0.1,
                     energyModel="quadratic",
@@ -148,7 +149,7 @@ F = Ffinal
 # cellPerimeters = cellPerimeters
 # cellAreas
 
-jldsave(datadir("$(system)_testSystem.jld2"); R,
+jldsave(datadir(subDir, "$(system)_testSystem.jld2"); R,
     A, 
     B, 
     F, 

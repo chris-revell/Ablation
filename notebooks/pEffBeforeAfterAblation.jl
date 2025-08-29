@@ -22,8 +22,10 @@ using FromFile
                 1.0 0.0
             ])
 
+inputDir = "quadraticPotentialNoPressure"; isdir(plotsdir(inputDir)) ? nothing : mkdir(plotsdir(inputDir))
+
 # inFile = datadir("referenceSystems", "Large_testSystem.jld2")
-inFile1 = datadir("referenceSystems", "quadraticPotentialNoPressure", "NoHole_testSystem.jld2")
+inFile1 = datadir("referenceSystems", inputDir, "NoHole_testSystem.jld2")
 importedData1 = load(inFile1)
 @unpack R, A, B, F, cellTensions, cellAreas, cellPerimeters, cellPressures = importedData1
 R1 = R
@@ -35,7 +37,7 @@ cellAreas1 = cellAreas
 cellPerimeters1 = cellPerimeters
 cellPressures1 = cellPressures
 
-inFile2 = datadir("referenceSystems", "quadraticPotentialNoPressure", "SingleHole_testSystem.jld2")
+inFile2 = datadir("referenceSystems", inputDir, "SingleHole_testSystem.jld2")
 importedData2 = load(inFile2)
 @unpack R, A, B, F, cellTensions, cellAreas, cellPerimeters, cellPressures = importedData2
 R2 = R
@@ -162,5 +164,5 @@ resize_to_layout!(fig)
 
 display(fig)
 
-save(plotsdir("edgeLaplacianShearStressBeforeAfterCellRemoved.png"), fig)
-save(plotsdir("edgeLaplacianShearStressBeforeAfterCellRemoved.pdf"), fig)
+save(plotsdir(inputDir, "edgeLaplacianShearStressBeforeAfterCellRemoved.png"), fig)
+save(plotsdir(inputDir, "edgeLaplacianShearStressBeforeAfterCellRemoved.pdf"), fig)

@@ -11,33 +11,32 @@ using JLD2
 using Dates
 using CircularArrays
 using FromFile
+using Printf
 
 @from "$(srcdir("PenrosePseudoInversion.jl"))" using PenrosePseudoInversion
 
 inputDir = "quadraticPotentialNoPressure"; isdir(plotsdir(inputDir)) ? nothing : mkdir(plotsdir(inputDir)); isdir(plotsdir(inputDir)) ? nothing : mkdir(plotsdir(inputDir))
+# inputDir = "quadraticPotentialWithPressure"; isdir(plotsdir(inputDir)) ? nothing : mkdir(plotsdir(inputDir)); isdir(plotsdir(inputDir)) ? nothing : mkdir(plotsdir(inputDir))
 inputSystems = ["NoHole", "SingleHole", "DoubleHole"]#, "Voronoi", "OldSystem"]
 
-suppressOrNot = "nosuppress"
-spokesOrNot = "spokes"
-
-fig = Figure(size=(2500, 1500), fontsize=24)
+fig = Figure(size=(2500, 1000), fontsize=48)
 axes = Axis[]
 individualLetters = string.(Char.(UInt8.(collect(97:97+26-1))))
 subfigureLabels = [L"($l)" for l in individualLetters]
 
 gl0 = GridLayout(fig[1,1])
 Label(gl0[0,2], "", fontsize=48, rotation=π/2)
-Label(gl0[1,2], "Cells", fontsize=48, rotation=π/2)
-Label(gl0[2,2], "Vertices", fontsize=48, rotation=π/2)
-Label(gl0[3,2], "Cells", fontsize=48, rotation=π/2)
-Label(gl0[4,2], "Vertices", fontsize=48, rotation=π/2)
-Label(gl0[1:2,1], "Divergences", fontsize=48, rotation=π/2)
-Label(gl0[3:4,1], "Curls", fontsize=48, rotation=π/2)
-rowsize!(gl0, 0, Relative(0.04))
-rowsize!(gl0, 1, Relative(0.24))
-rowsize!(gl0, 2, Relative(0.24))
-rowsize!(gl0, 3, Relative(0.24))
-rowsize!(gl0, 4, Relative(0.24))
+# Label(gl0[1,2], "Divergences", fontsize=48, rotation=π/2)
+# Label(gl0[2,2], "Curls", fontsize=48, rotation=π/2)
+# Label(gl0[3,2], "Cells", fontsize=48, rotation=π/2)
+# Label(gl0[4,2], "Vertices", fontsize=48, rotation=π/2)
+# Label(gl0[1:2,1], "Dual", fontsize=48, rotation=π/2)
+# Label(gl0[3:4,1], "Curls", fontsize=48, rotation=π/2)
+# rowsize!(gl0, 0, Relative(0.04))
+# rowsize!(gl0, 1, Relative(0.24))
+# rowsize!(gl0, 2, Relative(0.24))
+# rowsize!(gl0, 3, Relative(0.24))
+# rowsize!(gl0, 4, Relative(0.24))
 
 
 for (col,inputSystem) in enumerate(inputSystems)
@@ -146,10 +145,10 @@ for (col,inputSystem) in enumerate(inputSystems)
     UperpMax = max(maximum(abs.(Uperp)), 0.0001)
     UperpLims = (-UperpMax, UperpMax)
 
-    block1Max = maximum([ϕCapitalparMax, UparMax])
-    block1Lims = (-block1Max, block1Max)
-    block2Max = maximum([ϕCapitalperpMax, UperpMax])
-    block2Lims = (-block2Max, block2Max)
+    row1Max = maximum([ϕCapitalparMax, UparMax])
+    row1Lims = (-row1Max, row1Max)
+    row2Max = maximum([ϕCapitalperpMax, UperpMax])
+    row2Lims = (-row2Max, row2Max)
     
     
     # row3Max = max(uperpMax, ϕCapitalperpMax)
@@ -160,84 +159,88 @@ for (col,inputSystem) in enumerate(inputSystems)
     #%%
     gl = GridLayout(fig[1,1+col*2-1])
 
-    # push!(axes, Axis(gl[1,1], aspect=DataAspect()))
-    # for i=1:I
-    #     poly!(axes[end],cellPolygons[i],color=upar[i],colorrange=block1Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
-    # end
-    # Label(gl[1,1,Bottom()], L"u^\parallel", fontsize = 36)
-    push!(axes, Axis(gl[1,2], aspect=DataAspect()))
+    push!(axes, Axis(gl[1,1], aspect=DataAspect()))
     for i=1:I
-        poly!(axes[end],cellPolygons[i],color=ϕCapitalpar[i],colorrange=block1Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
+        poly!(axes[end],cellPolygons[i],color=ϕCapitalpar[i],colorrange=row1Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[1,2,Bottom()], L"\Phi^\parallel", fontsize = 36)
-    # Colorbar(gl[1:2,3],limits=block1Lims,colormap=:bam, height=Relative(0.5))
-
-    # push!(axes, Axis(gl[2,1], aspect=DataAspect()))
-    # for k=1:K
-    #     poly!(axes[end],linkTriangles[k],color=ϕpar[k],colorrange=block1Lims,colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
-    # end
-    # for i=1:I
-    #     poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
-    # end
-    # Label(gl[2,1,Bottom()], L"\phi^\parallel", fontsize = 36)
-    push!(axes, Axis(gl[2,2], aspect=DataAspect()))
+    Label(gl[1,1,Bottom()], L"\Phi^\parallel", fontsize = 24)
+    push!(axes, Axis(gl[1,2], aspect=DataAspect()))
     for k=1:K
-        poly!(axes[end],linkTriangles[k],color=Upar[k],colorrange=block1Lims,colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
+        poly!(axes[end],linkTriangles[k],color=Upar[k],colorrange=row1Lims,colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
     end
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[2,2,Bottom()], L"U^\parallel", fontsize = 36)
-    Colorbar(gl[1:2,3],limits=block1Lims,colormap=:bam, height=Relative(0.5))
+    Label(gl[1,2,Bottom()], L"U^\parallel", fontsize = 36)
+    Colorbar(gl[1,3],limits=row1Lims,colormap=:bam, height=Relative(0.8), ticklabelsize=24, ticks = ([-row1Max,0.0,row1Max], map(x -> @sprintf("%.3f",x), [-row1Max,0.0,row1Max])))
 
-    # push!(axes, Axis(gl[3,1], aspect=DataAspect()))
-    # for i=1:I
-    #     poly!(axes[end],cellPolygons[i],color=uperp[i],colorrange=block2Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
-    # end
-    # Label(gl[3,1,Bottom()], L"u^\perp", fontsize = 36)
-    push!(axes, Axis(gl[3,2], aspect=DataAspect()))
+    
+    push!(axes, Axis(gl[2,1], aspect=DataAspect()))
     for i=1:I
-        poly!(axes[end],cellPolygons[i],color=-ϕCapitalperp[i],colorrange=block2Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
+        poly!(axes[end],cellPolygons[i],color=-ϕCapitalperp[i],colorrange=row2Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[3,2,Bottom()], L"-\Phi^\perp", fontsize = 36)
-    # Colorbar(gl[3,3],limits=block2Lims,colormap=:bam, height=Relative(0.8))
+    Label(gl[2,1,Bottom()], L"-\Phi^\perp", fontsize = 24)
+    push!(axes, Axis(gl[2,2], aspect=DataAspect()))
+    for k=1:K
+        poly!(axes[end],linkTriangles[k],color=Uperp[k],colorrange=row2Lims, colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
+    end
+    for i=1:I
+        poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
+    end
+    Label(gl[2,2,Bottom()], L"U^\perp", fontsize = 36)
+    Colorbar(gl[2,3],limits=row2Lims, colormap=:bam, height=Relative(0.8), ticklabelsize=24, ticks = ([-row2Max,0.0,row2Max], map(x -> @sprintf("%.3f",x), [-row2Max,0.0,row2Max])))
+
 
     # push!(axes, Axis(gl[4,1], aspect=DataAspect()))
     # for k=1:K
-    #     poly!(axes[end],linkTriangles[k],color=-ϕperp[k],colorrange=block2Lims, colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
+    #     poly!(axes[end],linkTriangles[k],color=-ϕperp[k],colorrange=row2Lims, colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
     # end
     # for i=1:I
     #     poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     # end
-    # Label(gl[4,1,Bottom()], L"-\phi^\perp", fontsize = 36)
-    push!(axes, Axis(gl[4,2], aspect=DataAspect()))
-    for k=1:K
-        poly!(axes[end],linkTriangles[k],color=Uperp[k],colorrange=block2Lims, colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
-    end
-    for i=1:I
-        poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
-    end
-    Label(gl[4,2,Bottom()], L"U^\perp", fontsize = 36)
-    Colorbar(gl[3:4,3],limits=block2Lims, colormap=:bam, height=Relative(0.5))
-    
-    # Label(gl[0,1], "Primal", fontsize=48)
-    Label(gl[0,2], "Dual", fontsize=48)
-    
-    rowsize!(gl, 0, Relative(0.04))
-    rowsize!(gl, 1, Relative(0.24))
-    rowsize!(gl, 2, Relative(0.24))
-    rowsize!(gl, 3, Relative(0.24))
-    rowsize!(gl, 4, Relative(0.24))
+    # Label(gl[4,1,Bottom()], L"-\phi^\perp", fontsize = 24)
 
-    # colsize!(gl, 1, Relative(0.495))
-    colsize!(gl, 2, Relative(0.99))
+
+    # push!(axes, Axis(gl[3,1], aspect=DataAspect()))
+    # for i=1:I
+    #     poly!(axes[end],cellPolygons[i],color=uperp[i],colorrange=row2Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
+    # end
+    # Label(gl[3,1,Bottom()], L"u^\perp", fontsize = 24)
+
+    # push!(axes, Axis(gl[2,1], aspect=DataAspect()))
+    # for k=1:K
+    #     poly!(axes[end],linkTriangles[k],color=ϕpar[k],colorrange=row1Lims,colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
+    # end
+    # for i=1:I
+    #     poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
+    # end
+    # Label(gl[2,1,Bottom()], L"\phi^\parallel", fontsize = 24)
+
+    # push!(axes, Axis(gl[1,1], aspect=DataAspect()))
+    # for i=1:I
+    #     poly!(axes[end],cellPolygons[i],color=upar[i],colorrange=row1Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
+    # end
+    # Label(gl[1,1,Bottom()], L"u^\parallel", fontsize = 24)
+
+    
+    Label(gl[0,1], "Cells", fontsize=48)
+    Label(gl[0,2], "Vertices", fontsize=48)
+    
+    rowsize!(gl, 0, Relative(0.05))
+    # rowsize!(gl, 1, Relative(0.46))
+    # rowsize!(gl, 2, Relative(0.46))
+    # rowsize!(gl, 3, Relative(0.24))
+    # rowsize!(gl, 4, Relative(0.24))
+
+    colsize!(gl, 1, Relative(0.495))
+    colsize!(gl, 2, Relative(0.495))
     colsize!(gl, 3, Relative(0.01))
     
 end
 
 Label(fig[2,2, Top()], L"(a)", fontsize=48)
 Label(fig[2,4, Top()], L"(b)", fontsize=48)
-Label(fig[2,6, Top()], L"(b)", fontsize=48)
+Label(fig[2,6, Top()], L"(c)", fontsize=48)
 # Label(fig[2,1+5, Top()], "(c)", fontsize=48)
 rowsize!(fig.layout, 1, Relative(0.98))
 rowsize!(fig.layout, 2, Relative(0.02))
@@ -253,12 +256,13 @@ colsize!(fig.layout, 3, Relative(0.01))
 colsize!(fig.layout, 4, Relative(0.29))
 colsize!(fig.layout, 5, Relative(0.01))
 colsize!(fig.layout, 6, Relative(0.29))
-resize_to_layout!(fig)
+
+# resize_to_layout!(fig)
 
 hidedecorations!.(axes)
 hidespines!.(axes)
 display(fig)
 # save(plotsdir("figurePotentials_$(suppressOrNot)_$(spokesOrNot).png"), fig)
-save(plotsdir(inputDir, "figurePotentials.png"), fig)
+save(plotsdir(inputDir, "figurePotentialsAlt.png"), fig)
 # save(plotsdir("figurePotentials_$(suppressOrNot)_$(spokesOrNot).pdf"), fig)
-save(plotsdir(inputDir, "figurePotentials.pdf"), fig)
+save(plotsdir(inputDir, "figurePotentialsAlt.pdf"), fig)

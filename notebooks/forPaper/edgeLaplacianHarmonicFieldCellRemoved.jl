@@ -22,11 +22,60 @@ using FromFile
 #                 1.0 0.0
 #             ])
 
-inputSystem = "Large3"
+inputSystem = "Large2"
+inputDir = "quadraticPotentialNoPressure"; isdir(plotsdir(inputDir)) ? nothing : mkdir(plotsdir(inputDir))
+# inputDir = "quadraticPotentialWithPressure"; isdir(plotsdir(inputDir)) ? nothing : mkdir(plotsdir(inputDir))
 
-inFile = datadir("referenceSystems", "quadraticPotentialNoPressure", "$(inputSystem)Ablated_testSystem.jld2")
+inFile = datadir("referenceSystems", inputDir, "$(inputSystem)_testSystem.jld2")
 importedData = load(inFile)
-@unpack R2, A2, B2, F2, systemCOM2 = importedData
+@unpack R, A, B, F = importedData
+
+systemCOM = sum(R)./length(R)
+cellCentres1 = findCellCentresOfMass(R, A, B)
+centralCell = findmin(norm.([cellCentres1[i].-systemCOM for i=1:size(B,1)]))[2]
+# centralCellCOM = cellCentres1[centralCell]
+
+neighbourMatrix = dropzeros(B*transpose(B))
+# ablatedCells = unique(findall(x->x!=0, neighbourMatrix[centralCell,:]))
+ablatedCells = [centralCell]
+
+if isfile(datadir("referenceSystems", inputDir, "$(inputSystem)Ablated_testSystem.jld2"))
+    inFile = datadir("referenceSystems", inputDir, "$(inputSystem)Ablated_testSystem.jld2")
+    importedData = load(inFile)
+    @unpack R2, A2, B2, F2, systemCOM2 = importedData
+else
+    # Rtmp, Atmp, Btmp = ablateCells(R, A, B, [centralCell])
+    Rtmp, Atmp, Btmp = ablateCells(R, A, B, ablatedCells)
+
+    integ2 = vertexModel(abstol = 1e-9,
+                        reltol = 1e-9,
+                        initialSystem="argument",
+                        divisionToggle=0,
+                        R_in=Rtmp,
+                        A_in=Atmp,
+                        B_in=Btmp,
+                        pressureExternal=0.0,
+                        nCycles=0.5,
+                        outputToggle=0,
+                        frameDataToggle=0,
+                        frameImageToggle=0,
+                        videoToggle=0,
+                        printToggle=1,
+                        energyModel="quadratic",
+                        # termSteadyState=true,
+                    )
+    #%%
+    R2 = reinterpret(SVector{2,Float64}, integ2.u) 
+    params2, matrices2 = integ2.p
+    A2 = matrices2.A
+    B2 = matrices2.B
+    F2 = matrices2.F
+    @show maximum(norm.(sum(F2, dims=2)))
+
+    C = findC(A, B)
+    centralCellVertices = R[findall(x->x!=0, C[centralCell, :])]
+    systemCOM2 = sum(centralCellVertices)./length(centralCellVertices)
+end
 
 Lprimal = edgeLaplacianPrimal(R2, A2, B2)
 Ldual = edgeLaplacianDual(R2, A2, B2)
@@ -58,9 +107,9 @@ edgeQuadrilaterals = findEdgeQuadrilaterals(R2, A2, B2)
 
 
 # Primal network 
-α = 1.0
-β = 0.0
-# edgeVectorsPrimal = eigenvectors_Lprimal[1].*(α.*primalBasisParallel .+ β.*primalBasisPerp)
+zpar = 1.0
+zperp = 0.0
+# edgeVectorsPrimal = eigenvectors_Lprimal[1].*(zpar.*primalBasisParallel .+ zperp.*primalBasisPerp)
 edgeVectorsPrimalNorms = abs.(eigenvectors_Lprimal[1])./findEdgeLengths(R2, A2)
 # @show edgeVectorsPrimalNorms .- norm.(edgeVectorsPrimal)
 edgeVectorsPrimalNormsLims = (-2.0, log10(maximum(edgeVectorsPrimalNorms)))
@@ -75,7 +124,7 @@ end
 scatter!(axes[end], [Point{2,Float64}(systemCOM2)], color=(:red,0.5))
 hidedecorations!(axes[end])
 hidespines!(axes[end])
-Label(fig[2,1], popfirst!(subfigureLabels), fontsize=24) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
+Label(fig[2,1], popfirst!(subfigureLabels), fontsize=24) #"Single hole, 1st eigenmode, primal network, zpar=$(zpar), zperp=$(zperp)")
 Colorbar(fig[1,2], colorrange=edgeVectorsPrimalNormsLims, colormap=Reverse(:devon), height=Relative(0.8), label=L"log_{10}\left(\chi_j\right)")
 push!(axes, Axis(fig[1,3], xscale=log10, yscale=log10, aspect=AxisAspect(1), alignmode=Inside()))
 scatter!(axes[end], radii, edgeVectorsPrimalNorms, color=(:blue,0.1))
@@ -86,7 +135,7 @@ ylims!(axes[end], (minimum(edgeVectorsPrimalNorms),1.0))
 xlims!(axes[end], (minimum(radii),maximum(radii)))
 axes[end].xlabel = L"r_j"
 axes[end].ylabel = L"log_{10}\left(\chi_j\right)"
-Label(fig[2,3], popfirst!(subfigureLabels), fontsize=24) #"Single hole, 1st eigenmode, primal network, α=$(α), β=$(β)")
+Label(fig[2,3], popfirst!(subfigureLabels), fontsize=24) #"Single hole, 1st eigenmode, primal network, zpar=$(zpar), zperp=$(zperp)")
 
 rowsize!(fig.layout, 1, Relative(0.99))
 rowsize!(fig.layout, 2, Relative(0.01))
@@ -101,7 +150,13 @@ resize_to_layout!(fig)
 
 display(fig)
 
-save(plotsdir("edgeLaplacianHarmonicFieldCellRemoved_$(inputSystem).png"), fig)
-save(plotsdir("edgeLaplacianHarmonicFieldCellRemoved_$(inputSystem).pdf"), fig)
+save(plotsdir(inputDir, "edgeLaplacianHarmonicFieldCellRemoved_$(inputSystem).png"), fig)
+save(plotsdir(inputDir, "edgeLaplacianHarmonicFieldCellRemoved_$(inputSystem).pdf"), fig)
 
+jldsave(datadir("referenceSystems", inputDir, "$(inputSystem)Ablated_testSystem.jld2"); R2,
+    A2, 
+    B2, 
+    F2, 
+    systemCOM2,
+)
 

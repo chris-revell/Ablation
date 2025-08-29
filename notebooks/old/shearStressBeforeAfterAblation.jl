@@ -15,7 +15,9 @@ using InvertedIndices
 @from "$(srcdir("AblateCells.jl"))" using AblateCells
 @from "$(srcdir("Stresses.jl"))" using Stresses
 
-inFile = datadir("referenceSystems", "quadraticPotentialNoPressure", "NoHole_testSystem.jld2")
+inputDir = "quadraticPotentialNoPressure"; isdir(plotsdir(inputDir)) ? nothing : mkdir(plotsdir(inputDir))
+
+inFile = datadir("referenceSystems", inputDir, "NoHole_testSystem.jld2")
 importedData = load(inFile)
 @unpack R, A, B, F = importedData
 
@@ -174,5 +176,5 @@ resize_to_layout!(fig)
 
 display(fig)
 
-save(plotsdir("edgeLaplacianShearStressBeforeAfterCellRemoved.png"), fig)
-save(plotsdir("edgeLaplacianShearStressBeforeAfterCellRemoved.pdf"), fig)
+save(plotsdir(inputDir, "edgeLaplacianShearStressBeforeAfterCellRemoved.png"), fig)
+save(plotsdir(inputDir, "edgeLaplacianShearStressBeforeAfterCellRemoved.pdf"), fig)

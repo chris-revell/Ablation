@@ -43,8 +43,8 @@ for inputSystem in inputSystems
     I = size(B,1)
     J = size(B,2)
     K = size(A,2)
-    cellAreas = findCellAreas(R, A, B)
-    linkTriangleAreas = findCellLinkTriangleAreas(R, A, B)
+    aᵢ = findCellAreas(R, A, B)
+    Eₖ = findCellLinkTriangleAreas(R, A, B)
     𝐡 = hNetwork(R, A, B, F)
 
     
@@ -57,20 +57,17 @@ for inputSystem in inputSystems
     codivᶜh = codivᶜ(R, A, B, 𝐡)
     codivᵛh = codivᵛsuppress(R, A, B, 𝐡)
 
-    @show minimum(divᵛh)
-    @show maximum(divᵛh)
+    # @show minimum(divᵛh)
+    # @show maximum(divᵛh)
 
-    H = Diagonal(cellAreas)
-    E = Diagonal(linkTriangleAreas)
-    
     @show inputSystem
-    @show sum(cocurlᶜh.*cellAreas)
-    @show sum(-1.0.*divᶜh.*cellAreas)
-    @show sum(-1.0.*divᵛh.*linkTriangleAreas)
-    @show sum(cocurlᵛh.*linkTriangleAreas)
-    @show sum(curlᶜh.*cellAreas)
-    @show sum(codivᶜh.*cellAreas)
-    @show sum(codivᵛh.*linkTriangleAreas)
-    @show sum(curlᵛh.*linkTriangleAreas)
+    @show sum(aᵢ .* cocurlᶜh)
+    @show sum(aᵢ .* divᶜh)
+    @show sum(Eₖ .* divᵛh)
+    @show sum(Eₖ .* cocurlᵛh)
+    @show sum(aᵢ .* curlᶜh)
+    @show sum(aᵢ .* codivᶜh)
+    @show sum(Eₖ .* codivᵛh)
+    @show sum(Eₖ .* curlᵛh)
 
 end

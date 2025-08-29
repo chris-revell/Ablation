@@ -24,8 +24,10 @@ using InvertedIndices
                 1.0 0.0
             ])
 
+
+inputDir = "quadraticPotentialNoPressure"; isdir(plotsdir(inputDir)) ? nothing : mkdir(plotsdir(inputDir))
 # inFile = datadir("referenceSystems", "Large_testSystem.jld2")
-inFile = datadir("referenceSystems", "quadraticPotentialNoPressure", "NoHole_testSystem.jld2")
+inFile = datadir("referenceSystems", inputDir, "NoHole_testSystem.jld2")
 importedData = load(inFile)
 @unpack R, A, B, F = importedData
 
@@ -312,8 +314,8 @@ resize_to_layout!(fig)
 
 display(fig)
 
-save(plotsdir("comparisons.png"), fig)
-save(plotsdir("comparisons.pdf"), fig)
+save(plotsdir(inputDir, "comparisons.png"), fig)
+save(plotsdir(inputDir, "comparisons.pdf"), fig)
 
 
 

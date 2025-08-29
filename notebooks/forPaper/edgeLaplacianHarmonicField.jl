@@ -10,6 +10,9 @@ using Colors
 using JLD2
 using Dates
 
+inputDir = "quadraticPotentialNoPressure"; isdir(plotsdir(inputDir)) ? nothing : mkdir(plotsdir(inputDir))
+# inputDir = "quadraticPotentialWithPressure"; isdir(plotsdir(inputDir)) ? nothing : mkdir(plotsdir(inputDir))
+
 # (zpar, zperp) = (1,0)
 ϵᵢ = SMatrix{2, 2, Float64}([
                 0.0 1.0
@@ -26,7 +29,7 @@ individualLetters = string.(Char.(UInt8.(collect(97:97+26-1))))
 subfigureLabels = [L"(%$l)" for l in individualLetters]
 
 # Single hole 
-inFile = datadir("referenceSystems", "quadraticPotentialNoPressure", "SingleHole_testSystem.jld2")
+inFile = datadir("referenceSystems", inputDir, "SingleHole_testSystem.jld2")
 importedData = load(inFile)
 @unpack R, A, B, F = importedData
 Lprimal = edgeLaplacianPrimal(R, A, B)
@@ -88,7 +91,7 @@ arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[boundaryEdges.!=0]), Vec{2,Float64}
 # Label(fig[row,col,Bottom()], L"(%$(zpar), %$(zperp))", fontsize=36) #"Single hole, 1st eigenmode, dual network, zpar=$(zpar), zperp=$(zperp)")
 
 # Double hole 
-inFile = datadir("referenceSystems", "quadraticPotentialNoPressure", "DoubleHole_testSystem.jld2")
+inFile = datadir("referenceSystems", inputDir, "DoubleHole_testSystem.jld2")
 importedData = load(inFile)
 @unpack R, A, B, F = importedData
 Lprimal = edgeLaplacianPrimal(R, A, B)
@@ -244,5 +247,5 @@ colsize!(fig.layout, 4, Relative(0.23))
 hidedecorations!.(axes)
 hidespines!.(axes)
 display(fig)
-save(plotsdir("edgeLaplacianHarmonicField.png"), fig)
-save(plotsdir("edgeLaplacianHarmonicField.pdf"), fig)
+save(plotsdir(inputDir, "edgeLaplacianHarmonicField.png"), fig)
+save(plotsdir(inputDir, "edgeLaplacianHarmonicField.pdf"), fig)
