@@ -47,8 +47,8 @@ linkTriangleAreas = findCellLinkTriangleAreas(R, A, B)
 cellPolygons = findCellPolygons(R, A, B)
 𝐡 = hNetwork(R, A, B, F)
 
-boundaryVertices = findBoundaryVertices(A, B).==1
-boundaryCells = findBoundaryCells(B).==1
+boundaryVertices = findPeripheralVertices(A, B).==1
+boundaryCells = findPeripheralCells(B).==1
 
 ϕ = rand(size(A,2))
 Phi = rand(size(B,1))

@@ -74,8 +74,8 @@ for (col,inputSystem) in enumerate(inputSystems)
     𝐡 = hNetwork(R, A, B, F)
     # 𝐡 = [SVector{2,Float64}(1.0,0.0) for _=1:J]
     
-    boundaryVertices = findBoundaryVertices(A, B).==1
-    boundaryCells = findBoundaryCells(B).==1
+    boundaryVertices = findPeripheralVertices(A, B).==1
+    boundaryCells = findPeripheralCells(B).==1
 
     curlᶜh = curlᶜ(R, A, B, 𝐡)
     curlᶜhMax = max(maximum(abs.(curlᶜh)), 0.0001)

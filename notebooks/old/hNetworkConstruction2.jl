@@ -33,7 +33,7 @@ using InvertedIndices
 #     nCells = size(B,1)
 #     nEdges = size(B,2)
 #     nVerts = size(A,2)
-#     boundaryEdges = findBoundaryEdges(B)
+#     boundaryEdges = findPeripheralEdges(B)
 #     boundaryCells = findnz(B[:, boundaryEdges.==1])[1]
 #     cellVertexOrders  = fill(CircularVector(Int64[]), nCells)
 #     cellEdgeOrders    = fill(CircularVector(Int64[]), nCells)

@@ -85,8 +85,8 @@ dummyEdgeRadii2 = collect(maximum(edgeradii2)/100:maximum(edgeradii2)/100:maximu
 
 cellPolygons1 = findCellPolygons(R, A, B)
 cellPolygons2 = findCellPolygons(R2, A2, B2)
-boundaryCells1 = findBoundaryCells(B).==1
-boundaryCells2 = findBoundaryCells(B2).==1
+boundaryCells1 = findPeripheralCells(B).==1
+boundaryCells2 = findPeripheralCells(B2).==1
 
 𝐡1 = hNetwork(R, A, B, F)
 𝐡2 = hNetwork(R2, A2, B2, F2)

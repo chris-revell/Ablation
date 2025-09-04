@@ -80,10 +80,10 @@ linkTriangleAreas = findCellLinkTriangleAreas(R, A, B)
 cellPolygons = findCellPolygons(R, A, B)
 𝐡 = hNetwork(R, A, B, F)
 
-boundaryVertices = findBoundaryVertices(A, B).==1
-boundaryCells = findBoundaryCells(B).==1
-boundaryEdges = findBoundaryEdges(B).==1
-notBoundaryEdges = findBoundaryEdges(B).==0
+boundaryVertices = findPeripheralVertices(A, B).==1
+boundaryCells = findPeripheralCells(B).==1
+boundaryEdges = findPeripheralEdges(B).==1
+notBoundaryEdges = findPeripheralEdges(B).==0
 
 
 𝐡 .= [𝐡[j]-𝐡[findfirst(x->x, boundaryEdges)] for j=1:J]

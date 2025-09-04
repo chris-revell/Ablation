@@ -87,7 +87,7 @@ mov = VideoStream(fig, framerate=20)
 recordframe!(mov)
 
 
-boundaryEdges = findBoundaryEdges(B)
+boundaryEdges = findPeripheralEdges(B)
 boundaryCells = findnz(B[:, boundaryEdges.==1])[1]
 currentCell = [rand(boundaryCells)]
 

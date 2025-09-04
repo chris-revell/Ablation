@@ -76,8 +76,8 @@ dummyDists2 = collect(maximum(radii2)/100:maximum(radii2)/100:maximum(radii2))
 
 cellPolygons = findCellPolygons(R, A, B)
 cellPolygons2 = findCellPolygons(R2, A2, B2)
-boundaryCells = findBoundaryCells(B).==1
-boundaryCells2 = findBoundaryCells(B2).==1
+boundaryCells = findPeripheralCells(B).==1
+boundaryCells2 = findPeripheralCells(B2).==1
 
 # Before
 # clims = (minimum(log10.(ζᵢ1)), maximum(log10.(ζᵢ1)))

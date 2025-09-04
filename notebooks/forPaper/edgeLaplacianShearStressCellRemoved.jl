@@ -87,7 +87,7 @@ radii = norm.([cellCentres2[i].-systemCOM for i=1:size(B2,1)])
 dummyDists = collect(maximum(radii)/100:maximum(radii)/100:maximum(radii))
 
 cellPolygons = findCellPolygons(R2, A2, B2)
-boundaryCells = findBoundaryCells(B2).==1
+boundaryCells = findPeripheralCells(B2).==1
 
 # 1st eigenmode
 clims = (minimum(log10.(ζᵢ)), maximum(log10.(ζᵢ)))

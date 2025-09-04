@@ -39,7 +39,7 @@ using InvertedIndices
 #     I = size(B,1)
 #     J = size(B,2)
 #     K = size(A,2)
-#     boundaryEdges = findBoundaryEdges(B)
+#     boundaryEdges = findPeripheralEdges(B)
 #     boundaryCells = findnz(B[:, boundaryEdges.==1])[1]
 #     cellVertexOrders  = fill(CircularVector(Int64[]), I)
 #     cellEdgeOrders    = fill(CircularVector(Int64[]), I)
@@ -187,7 +187,7 @@ for (col,inputSystem) in enumerate(inputSystems)
     hidedecorations!(axes[end])
     hidespines!(axes[end])
     
-    boundaryEdges = findBoundaryEdges(B).==1
+    boundaryEdges = findPeripheralEdges(B).==1
 
     push!(axes, Axis(fig[2,col], aspect=DataAspect()))
     # scatter!(axes[end], Point{2,Float64}.(𝐡_hh), color=(:red, 0.55))

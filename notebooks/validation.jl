@@ -62,8 +62,8 @@ for (col, inputSystem) in enumerate(inputSystems)
     curlᵛ𝐂   = (spokesOrNot=="spokes" ? curlᵛspokes(R, A, B, 𝐂ⱼ) : curlᵛ(R, A, B, 𝐂ⱼ))
 
 
-    internalVertices = findBoundaryVertices(A, B).!=1
-    internalCells = findBoundaryCells(B).!=1
+    internalVertices = findPeripheralVertices(A, B).!=1
+    internalCells = findPeripheralCells(B).!=1
 
     @show inputSystem
     # printstyled("cocurlᶜc max: $(maximum(cocurlᶜ𝐜)), min: $(minimum(cocurlᶜ𝐜))\n"; color = (abs(maximum(cocurlᶜ𝐜)-2.0) < 1e-8 && abs(minimum(cocurlᶜ𝐜)-2.0) > -1e-8 ? :green : :red))

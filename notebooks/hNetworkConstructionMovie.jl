@@ -100,7 +100,7 @@ cellAreas = findCellAreas(R, A, B)
 cellPerimeterLengths = findCellPerimeterLengths(R, A, B)
 edgeTangents = findEdgeTangents(R, A)
 edgeLengths = findEdgeLengths(R, A)
-boundaryEdges = findBoundaryEdges(B)
+boundaryEdges = findPeripheralEdges(B)
 boundaryCells = findnz(B[:, boundaryEdges.==1])[1]
 cellVertexOrders  = fill(CircularVector(Int64[]), nCells)
 cellEdgeOrders    = fill(CircularVector(Int64[]), nCells)
