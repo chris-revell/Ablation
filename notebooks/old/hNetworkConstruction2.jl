@@ -33,8 +33,8 @@ using InvertedIndices
 #     nCells = size(B,1)
 #     nEdges = size(B,2)
 #     nVerts = size(A,2)
-#     boundaryEdges = findPeripheralEdges(B)
-#     boundaryCells = findnz(B[:, boundaryEdges.==1])[1]
+#     peripheralEdges = findPeripheralEdges(B)
+#     peripheralCells = findnz(B[:, peripheralEdges.==1])[1]
 #     cellVertexOrders  = fill(CircularVector(Int64[]), nCells)
 #     cellEdgeOrders    = fill(CircularVector(Int64[]), nCells)
 #     for i = 1:length(cellVertexOrders)
@@ -48,7 +48,7 @@ using InvertedIndices
 #     B̄ = abs.(B)
 
 #     # Ensure we don't start with a boundary cell
-#     startCell = rand(collect(1:nCells)[Not(boundaryCells)])
+#     startCell = rand(collect(1:nCells)[Not(peripheralCells)])
 #     traversedCells = Int64[]
 #     traversedEdges = Int64[]
 #     cellNeighbourMatrix = B*transpose(B)

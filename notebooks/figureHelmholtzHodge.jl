@@ -39,8 +39,8 @@ using InvertedIndices
 #     I = size(B,1)
 #     J = size(B,2)
 #     K = size(A,2)
-#     boundaryEdges = findPeripheralEdges(B)
-#     boundaryCells = findnz(B[:, boundaryEdges.==1])[1]
+#     peripheralEdges = findPeripheralEdges(B)
+#     peripheralCells = findnz(B[:, peripheralEdges.==1])[1]
 #     cellVertexOrders  = fill(CircularVector(Int64[]), I)
 #     cellEdgeOrders    = fill(CircularVector(Int64[]), I)
 #     for i = 1:I
@@ -54,7 +54,7 @@ using InvertedIndices
 #     B̄ = abs.(B)
 
 #     # Ensure we don't start with a boundary cell
-#     startCell = rand(collect(1:I)[Not(boundaryCells)])
+#     startCell = rand(collect(1:I)[Not(peripheralCells)])
 #     # startCell = 1 
 #     traversedCells = Int64[]
 #     traversedEdges = Int64[]
@@ -187,12 +187,12 @@ for (col,inputSystem) in enumerate(inputSystems)
     hidedecorations!(axes[end])
     hidespines!(axes[end])
     
-    boundaryEdges = findPeripheralEdges(B).==1
+    peripheralEdges = findPeripheralEdges(B).==1
 
     push!(axes, Axis(fig[2,col], aspect=DataAspect()))
     # scatter!(axes[end], Point{2,Float64}.(𝐡_hh), color=(:red, 0.55))
-    scatter!(axes[end], Point{2,Float64}.(𝐇_hh[Not(boundaryEdges)]), color=(:green, 0.2))
-    scatter!(axes[end], Point{2,Float64}.(𝐇_hh[boundaryEdges]), color=(:green, 0.2), marker=:cross)
+    scatter!(axes[end], Point{2,Float64}.(𝐇_hh[Not(peripheralEdges)]), color=(:green, 0.2))
+    scatter!(axes[end], Point{2,Float64}.(𝐇_hh[peripheralEdges]), color=(:green, 0.2), marker=:cross)
 
     for i=1:I, k=1:K
         k_js = findall(x->x!=0, A[:,k])
@@ -202,14 +202,14 @@ for (col,inputSystem) in enumerate(inputSystems)
     end
 
 
-    # scatter!(axes[end], Point{2,Float64}.(𝐡[Not(boundaryEdges)]), color=(:blue, 0.2))
-    # scatter!(axes[end], Point{2,Float64}.(𝐡[boundaryEdges]), color=(:blue, 0.2), marker=:cross)
+    # scatter!(axes[end], Point{2,Float64}.(𝐡[Not(peripheralEdges)]), color=(:blue, 0.2))
+    # scatter!(axes[end], Point{2,Float64}.(𝐡[peripheralEdges]), color=(:blue, 0.2), marker=:cross)
     Label(fig[2,col, Bottom()], "h")
 
     push!(axes, Axis(fig[3,col], aspect=DataAspect()))
     # scatter!(axes[end], Point{2,Float64}.([𝐡_hh[j].-𝐡[j] for j=1:size(B,2)]), color=(:red, 0.55))
-    scatter!(axes[end], Point{2,Float64}.(([𝐇_hh[j].-𝐡[j] for j=1:size(B,2)])[Not(boundaryEdges)]), color=(:green, 0.2))
-    scatter!(axes[end], Point{2,Float64}.(([𝐇_hh[j].-𝐡[j] for j=1:size(B,2)])[boundaryEdges]), color=(:green, 0.2), marker=:cross)
+    scatter!(axes[end], Point{2,Float64}.(([𝐇_hh[j].-𝐡[j] for j=1:size(B,2)])[Not(peripheralEdges)]), color=(:green, 0.2))
+    scatter!(axes[end], Point{2,Float64}.(([𝐇_hh[j].-𝐡[j] for j=1:size(B,2)])[peripheralEdges]), color=(:green, 0.2), marker=:cross)
     Label(fig[3,col, Bottom()], "x")
 end
 

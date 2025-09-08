@@ -87,9 +87,9 @@ mov = VideoStream(fig, framerate=20)
 recordframe!(mov)
 
 
-boundaryEdges = findPeripheralEdges(B)
-boundaryCells = findnz(B[:, boundaryEdges.==1])[1]
-currentCell = [rand(boundaryCells)]
+peripheralEdges = findPeripheralEdges(B)
+peripheralCells = findnz(B[:, peripheralEdges.==1])[1]
+currentCell = [rand(peripheralCells)]
 
 # Clear everything from the axis 
 empty!(ax)

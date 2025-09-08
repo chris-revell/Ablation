@@ -86,8 +86,8 @@ for (col,inputSystem) in enumerate(inputSystems)
     # end
     #%%
     
-    boundaryVertices = findPeripheralVertices(A, B).==1
-    boundaryCells = findPeripheralCells(B).==1
+    peripheralVertices = findPeripheralVertices(A, B).==1
+    peripheralCells = findPeripheralCells(B).==1
 
     aᵢ = findCellAreas(R, A, B)
     Eₖ = findCellLinkTriangleAreas(R, A, B)

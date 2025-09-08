@@ -23,7 +23,7 @@ using CircularArrays
 conditionsDict    = load(datadir("oldPaper", "dataFinal.jld2"))
 @unpack nVerts,nCells,nEdges,pressureExternal,γ,λ,viscousTimeScale,realTimetMax,tMax,dt,outputInterval,outputTotal,realCycleTime,t1Threshold = conditionsDict["params"]
 matricesDict = load(datadir("oldPaper", "matricesFinal.jld2"))
-@unpack A,B,C,R,F,edgeTangents,edgeMidpoints,cellPositions,ϵ,cellAreas,externalF,boundaryVertices,cellPressures,edgeLengths,cellTensions, cellPerimeters = matricesDict["matrices"]
+@unpack A,B,C,R,F,edgeTangents,edgeMidpoints,cellPositions,ϵ,cellAreas,externalF,peripheralVertices,cellPressures,edgeLengths,cellTensions, cellPerimeters = matricesDict["matrices"]
 
 dropzeros!(A)
 dropzeros!(B)

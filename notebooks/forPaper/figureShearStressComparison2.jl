@@ -85,8 +85,8 @@ dummyEdgeRadii2 = collect(maximum(edgeradii2)/100:maximum(edgeradii2)/100:maximu
 
 cellPolygons1 = findCellPolygons(R, A, B)
 cellPolygons2 = findCellPolygons(R2, A2, B2)
-boundaryCells1 = findPeripheralCells(B).==1
-boundaryCells2 = findPeripheralCells(B2).==1
+peripheralCells1 = findPeripheralCells(B).==1
+peripheralCells2 = findPeripheralCells(B2).==1
 
 𝐡1 = hNetwork(R, A, B, F)
 𝐡2 = hNetwork(R2, A2, B2, F2)
@@ -158,8 +158,8 @@ Colorbar(fig[1,2], colorrange=ΔζLims, colormap=:bam, height=Relative(0.8), lab
 Label(fig[2,1], popfirst!(subfigureLabels), fontsize=24) 
 
 push!(axes, Axis(fig[1,3], aspect=AxisAspect(1)))#, xscale=log10, yscale=log10))
-scatter!(axes[end], log10.(cellradii2[Not(boundaryCells2)]), log10.(abs.(Δζ[Not(boundaryCells2)])), color=(:blue, 0.25))
-scatter!(axes[end], log10.(cellradii2[boundaryCells2]), log10.(abs.(Δζ[boundaryCells2])), color=(:red, 0.25))
+scatter!(axes[end], log10.(cellradii2[Not(peripheralCells2)]), log10.(abs.(Δζ[Not(peripheralCells2)])), color=(:blue, 0.25))
+scatter!(axes[end], log10.(cellradii2[peripheralCells2]), log10.(abs.(Δζ[peripheralCells2])), color=(:red, 0.25))
 lines!(axes[end], log10.(dummyCellRadii2), log10.((-0.01 .+1.0./dummyCellRadii2)))
 lines!(axes[end], log10.(dummyCellRadii2), log10.((-0.01 .+1.0./dummyCellRadii2.^2)))
 axes[end].ylabel = L"log_{10}\left(\Delta\zeta_i\right)"
@@ -181,8 +181,8 @@ Colorbar(fig[3,2], colorrange=ΔpEffLims, colormap=:bam, height=Relative(0.8), l
 Label(fig[4,1], popfirst!(subfigureLabels), fontsize=24) 
 
 push!(axes, Axis(fig[3,3], aspect=AxisAspect(1)))#, xscale=log10, yscale=log10))
-scatter!(axes[end], log10.(cellradii2[Not(boundaryCells2)]), log10.(abs.(ΔpEff[Not(boundaryCells2)])), color=(:blue, 0.25))
-scatter!(axes[end], log10.(cellradii2[boundaryCells2]), log10.(abs.(ΔpEff[boundaryCells2])), color=(:red, 0.25))
+scatter!(axes[end], log10.(cellradii2[Not(peripheralCells2)]), log10.(abs.(ΔpEff[Not(peripheralCells2)])), color=(:blue, 0.25))
+scatter!(axes[end], log10.(cellradii2[peripheralCells2]), log10.(abs.(ΔpEff[peripheralCells2])), color=(:red, 0.25))
 lines!(axes[end], log10.(dummyCellRadii2), log10.((-0.01 .+1.0./dummyCellRadii2)))
 lines!(axes[end], log10.(dummyCellRadii2), log10.((-0.01 .+1.0./(dummyCellRadii2).^2)))
 axes[end].ylabel = L"log_{10}\left(\Delta P_{eff}\right)"

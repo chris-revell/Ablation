@@ -39,7 +39,7 @@ eigenvalues_Ldual = (eigen(Matrix(Ldual))).values
 cellPolygons = findCellPolygons(R, A, B)
 𝐜ⱼ = findEdgeMidpoints(R, A)
 𝐂ⱼ = findCellLinkMidpoints(R, A, B)
-boundaryEdges = findPeripheralEdges(B)
+peripheralEdges = findPeripheralEdges(B)
 primalBasisParallel = findEdgeTangents(R, A)./(findEdgeLengths(R, A).^2)
 primalBasisPerp = [ϵᵢ*v for v in primalBasisParallel]
 dualBasisParallel = findCellLinks(R, A, B)./(findCellLinkLengths(R, A, B).^2)
@@ -72,8 +72,8 @@ push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
 edgeVectors = eigenvectors_Ldual[1].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
 arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
-arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[boundaryEdges.==0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.==0]), color=arrowColours[boundaryEdges.==0], linewidth=2)
-arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[boundaryEdges.!=0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.!=0]), color=arrowColours[boundaryEdges.!=0], linewidth=2)
+arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[peripheralEdges.==0]), Vec{2,Float64}.(edgeVectors[peripheralEdges.==0]), color=arrowColours[peripheralEdges.==0], linewidth=2)
+arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[peripheralEdges.!=0]), Vec{2,Float64}.(edgeVectors[peripheralEdges.!=0]), color=arrowColours[peripheralEdges.!=0], linewidth=2)
 Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Single hole, 1st eigenmode, dual network, α=$(α), β=$(β)")
 col += 1
 α = 0.0
@@ -82,8 +82,8 @@ push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
 edgeVectors = eigenvectors_Ldual[1].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
 arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
-arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[boundaryEdges.==0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.==0]), color=arrowColours[boundaryEdges.==0], linewidth=2)
-arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[boundaryEdges.!=0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.!=0]), color=arrowColours[boundaryEdges.!=0], linewidth=2)
+arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[peripheralEdges.==0]), Vec{2,Float64}.(edgeVectors[peripheralEdges.==0]), color=arrowColours[peripheralEdges.==0], linewidth=2)
+arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[peripheralEdges.!=0]), Vec{2,Float64}.(edgeVectors[peripheralEdges.!=0]), color=arrowColours[peripheralEdges.!=0], linewidth=2)
 Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Single hole, 1st eigenmode, dual network, α=$(α), β=$(β)")
 
 # Double hole 
@@ -99,7 +99,7 @@ eigenvalues_Ldual = (eigen(Matrix(Ldual))).values
 cellPolygons = findCellPolygons(R, A, B)
 𝐜ⱼ = findEdgeMidpoints(R, A)
 𝐂ⱼ = findCellLinkMidpoints(R, A, B)
-boundaryEdges = findPeripheralEdges(B)
+peripheralEdges = findPeripheralEdges(B)
 primalBasisParallel = findEdgeTangents(R, A)./(findEdgeLengths(R, A).^2)
 primalBasisPerp = [ϵᵢ*v for v in primalBasisParallel]
 dualBasisParallel = findCellLinks(R, A, B)./(findCellLinkLengths(R, A, B).^2)
@@ -135,8 +135,8 @@ push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
 edgeVectors = eigenvectors_Ldual[1].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
 arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
-arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[boundaryEdges.==0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.==0]), color=arrowColours[boundaryEdges.==0], linewidth=2)
-arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[boundaryEdges.!=0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.!=0]), color=arrowColours[boundaryEdges.!=0], linewidth=2)
+arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[peripheralEdges.==0]), Vec{2,Float64}.(edgeVectors[peripheralEdges.==0]), color=arrowColours[peripheralEdges.==0], linewidth=2)
+arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[peripheralEdges.!=0]), Vec{2,Float64}.(edgeVectors[peripheralEdges.!=0]), color=arrowColours[peripheralEdges.!=0], linewidth=2)
 Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Double hole, 1st eigenmode, dual network, α=$(α), β=$(β)")
 col += 1
 α = 0.0
@@ -145,8 +145,8 @@ push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
 edgeVectors = eigenvectors_Ldual[1].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
 arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
-arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[boundaryEdges.==0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.==0]), color=arrowColours[boundaryEdges.==0], linewidth=2)
-arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[boundaryEdges.!=0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.!=0]), color=arrowColours[boundaryEdges.!=0], linewidth=2)
+arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[peripheralEdges.==0]), Vec{2,Float64}.(edgeVectors[peripheralEdges.==0]), color=arrowColours[peripheralEdges.==0], linewidth=2)
+arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[peripheralEdges.!=0]), Vec{2,Float64}.(edgeVectors[peripheralEdges.!=0]), color=arrowColours[peripheralEdges.!=0], linewidth=2)
 Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Double hole, 1st eigenmode, dual network, α=$(α), β=$(β)")
 
 row = 3
@@ -180,8 +180,8 @@ push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
 edgeVectors = eigenvectors_Ldual[2].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
 arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
-arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[boundaryEdges.==0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.==0]), color=arrowColours[boundaryEdges.==0], linewidth=2)
-arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[boundaryEdges.!=0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.!=0]), color=arrowColours[boundaryEdges.!=0], linewidth=2)
+arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[peripheralEdges.==0]), Vec{2,Float64}.(edgeVectors[peripheralEdges.==0]), color=arrowColours[peripheralEdges.==0], linewidth=2)
+arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[peripheralEdges.!=0]), Vec{2,Float64}.(edgeVectors[peripheralEdges.!=0]), color=arrowColours[peripheralEdges.!=0], linewidth=2)
 Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Double hole, 2nd eigenmode, dual network, α=$(α), β=$(β)")
 col += 1
 α = 0.0
@@ -190,8 +190,8 @@ push!(axes, Axis(fig[row,col], aspect=DataAspect()))
 poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
 edgeVectors = eigenvectors_Ldual[2].*(α.*dualBasisParallel .+ β.*dualBasisPerp)
 arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
-arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[boundaryEdges.==0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.==0]), color=arrowColours[boundaryEdges.==0], linewidth=2)
-arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[boundaryEdges.!=0]), Vec{2,Float64}.(edgeVectors[boundaryEdges.!=0]), color=arrowColours[boundaryEdges.!=0], linewidth=2)
+arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[peripheralEdges.==0]), Vec{2,Float64}.(edgeVectors[peripheralEdges.==0]), color=arrowColours[peripheralEdges.==0], linewidth=2)
+arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[peripheralEdges.!=0]), Vec{2,Float64}.(edgeVectors[peripheralEdges.!=0]), color=arrowColours[peripheralEdges.!=0], linewidth=2)
 Label(fig[row,col,Bottom()], popfirst!(subfigureLabels), fontsize=36) #"Double hole, 2nd eigenmode, dual network, α=$(α), β=$(β)")
 
 

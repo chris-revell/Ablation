@@ -86,7 +86,7 @@ eigenvalues_Ldual = (eigen(Matrix(Ldual))).values
 
 𝐜ⱼ = findEdgeMidpoints(R2, A2)
 𝐂ⱼ = findCellLinkMidpoints(R2, A2, B2)
-boundaryEdges = findPeripheralEdges(B2)
+peripheralEdges = findPeripheralEdges(B2)
 # primalBasisParallel = findEdgeTangents(R2, A2)./(findEdgeLengths(R2, A2).^2)
 # primalBasisPerp = [ϵᵢ*v for v in primalBasisParallel]
 # dualBasisParallel = findCellLinks(R2, A2, B2)./(findCellLinkLengths(R2, A2, B2).^2)

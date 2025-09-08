@@ -64,8 +64,8 @@ dummyDists2 = collect(maximum(radii2)/100:maximum(radii2)/100:maximum(radii2))
 
 cellPolygons = findCellPolygons(R1, A1, B1)
 cellPolygons2 = findCellPolygons(R2, A2, B2)
-boundaryCells1 = findPeripheralCells(B1).==1
-boundaryCells2 = findPeripheralCells(B2).==1
+peripheralCells1 = findPeripheralCells(B1).==1
+peripheralCells2 = findPeripheralCells(B2).==1
 
 # Before
 # clims = (minimum(log10.(ζᵢ1)), maximum(log10.(ζᵢ1)))
@@ -82,8 +82,8 @@ Colorbar(fig[1,2], colorrange=clims, colormap=:batlow, height=Relative(0.8), ali
 
 # push!(axes, Axis(fig[1,3], yscale=log10, xscale=log10, aspect=AxisAspect(1), alignmode=Inside()))
 push!(axes, Axis(fig[1,3], aspect=AxisAspect(1), alignmode=Inside()))
-scatter!(axes[end], radii[Not(boundaryCells)], ζᵢ1[Not(boundaryCells)], color=(:blue,0.3))
-scatter!(axes[end], radii[boundaryCells], ζᵢ1[boundaryCells], color=(:red,0.3))
+scatter!(axes[end], radii[Not(peripheralCells)], ζᵢ1[Not(peripheralCells)], color=(:blue,0.3))
+scatter!(axes[end], radii[peripheralCells], ζᵢ1[peripheralCells], color=(:red,0.3))
 # lines!(axes[end], dummyDists, 0.1./dummyDists, color=(:black, 0.75), linestyle=:dash)
 # lines!(axes[end], dummyDists, 1.0./(dummyDists).^2, color=(:black, 0.75), linestyle=:dash)
 # lines!(axes[end], dummyDists, 0.1./(dummyDists).^3, color=(:black, 0.75), linestyle=:dash)
@@ -108,8 +108,8 @@ Colorbar(fig[3,2], colorrange=clims, colormap=:batlow, height=Relative(0.8), ali
 
 # push!(axes, Axis(fig[3,3], yscale=log10, xscale=log10, aspect=AxisAspect(1), alignmode=Inside()))
 push!(axes, Axis(fig[3,3], aspect=AxisAspect(1), alignmode=Inside()))
-scatter!(axes[end], radii2[Not(boundaryCells2)], ζᵢ2[Not(boundaryCells2)], color=(:blue,0.3))
-scatter!(axes[end], radii2[boundaryCells2], ζᵢ2[boundaryCells2], color=(:red,0.3))
+scatter!(axes[end], radii2[Not(peripheralCells2)], ζᵢ2[Not(peripheralCells2)], color=(:blue,0.3))
+scatter!(axes[end], radii2[peripheralCells2], ζᵢ2[peripheralCells2], color=(:red,0.3))
 # lines!(axes[end], dummyDists2, 0.1./dummyDists2, color=(:black, 0.75), linestyle=:dash)
 # lines!(axes[end], dummyDists, 1.0./(dummyDists).^2, color=(:black, 0.75), linestyle=:dash)
 # lines!(axes[end], dummyDists2, 0.1./(dummyDists2).^3, color=(:black, 0.75), linestyle=:dash)
@@ -135,8 +135,8 @@ Label(fig[6,1], popfirst!(subfigureLabels), fontsize=24)
 Colorbar(fig[5,2], colorrange=clims, colormap=:vik, height=Relative(0.8), alignmode=Inside())
 
 push!(axes, Axis(fig[5,3], aspect=AxisAspect(1), alignmode=Inside()))
-scatter!(axes[end], radii2[Not(boundaryCells2)], difζ[Not(boundaryCells2)], color=(:blue,0.3))
-scatter!(axes[end], radii2[boundaryCells2], difζ[boundaryCells2], color=(:red,0.3))
+scatter!(axes[end], radii2[Not(peripheralCells2)], difζ[Not(peripheralCells2)], color=(:blue,0.3))
+scatter!(axes[end], radii2[peripheralCells2], difζ[peripheralCells2], color=(:red,0.3))
 # lines!(axes[end], dummyDists2, 0.1./dummyDists2, color=(:black, 0.75), linestyle=:dash)
 # lines!(axes[end], dummyDists, 1.0./(dummyDists).^2, color=(:black, 0.75), linestyle=:dash)
 # lines!(axes[end], dummyDists2, 0.1./(dummyDists2).^3, color=(:black, 0.75), linestyle=:dash)
