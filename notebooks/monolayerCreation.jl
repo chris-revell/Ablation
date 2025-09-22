@@ -17,7 +17,7 @@ using OrdinaryDiffEq
 
 #%%
 
-subDir = "quadraticPotentialWithPressure"
+subDir = "referenceSystems/quadraticPotentialNoPressure"
 systems = ["NoHole", "SingleHole", "DoubleHole", "Large"]
 system = systems[4]
 
@@ -25,14 +25,14 @@ system = systems[4]
 integ1 = vertexModel(abstol = 1e-9,
                     reltol = 1e-9,
                     nRows=11,
-                    nCycles=(system=="Large" ? 3 : 2),
+                    nCycles=(system=="Large" ? 4 : 2),
                     printToggle=1,
                     frameDataToggle=0,
                     frameImageToggle=0,
                     videoToggle=0,
                     setRandomSeed=12345,
                     divisionToggle=1,
-                    pressureExternal=0.1,
+                    pressureExternal=0.0,
                     energyModel="quadratic",
                 )
 
@@ -54,7 +54,7 @@ for i=1:size(B1,1)
 end
 scatter!(ax, Point{2,Float64}.(cellCentres1), color=(:black,1.0), markersize=10)
 annotations!(ax, string.(collect(1:params1.nCells)), Point{2,Float64}.(cellCentres1), fontsize=12, color=(:black,1.0))
-display(fig)
+# display(fig)
 
 #%%
 
@@ -93,7 +93,7 @@ scatter!(ax2, Point{2,Float64}.(cellCentresAblated), color=(:black,1.0), markers
 annotations!(ax2, string.(collect(1:size(B1,1)))[Not(ablatedCells)], Point{2,Float64}.(cellCentresAblated), fontsize=12, color=(:black,1.0))
 hidedecorations!(ax2)
 hidespines!(ax2)
-display(fig)
+# display(fig)
 
 #%%
 
@@ -104,7 +104,7 @@ integ2 = vertexModel(abstol = 1e-9,
                     R_in=ablatedR,
                     A_in=ablatedA,
                     B_in=ablatedB,
-                    pressureExternal=0.1,
+                    pressureExternal=0.0,
                     nCycles=1.0,
                     outputToggle=0,
                     frameDataToggle=0,
@@ -138,7 +138,7 @@ for i=1:size(Bfinal,1)
 end
 scatter!(ax3, Point{2,Float64}.(cellCentres2), color=(:black,1.0), markersize=10)
 annotations!(ax3, string.(collect(1:size(B1,1)))[Not(ablatedCells)], Point{2,Float64}.(cellCentres2), fontsize=12, color=(:black,1.0))
-display(fig)
+# display(fig)
 
 R = Rfinal
 A = Afinal

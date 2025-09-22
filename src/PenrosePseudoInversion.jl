@@ -24,20 +24,19 @@ function penrosePseudoInversion(L, g, M)
     ğ = g .- ḡ
 
     ϕ̆ = zeros(n)
-    ϕ̆Spectrum = Float64[]
-    ϕ̄₀ = zeros(n)
+    # ϕ̆Spectrum = Float64[]
     for k = 2:n
     # for k = findfirst(x->x>1e-9, λᵛ):n
         amplitude = innerProd(eᵛ[k], M, ğ) / (λᵛ[k] * innerProd(eᵛ[k], M, eᵛ[k]))
         ϕ̆ .+= amplitude .* eᵛ[k]
-        push!(ϕ̆Spectrum, amplitude)
+        # push!(ϕ̆Spectrum, amplitude)
         # ϕ̄₀ .+= eᵛ[k] .* innerProd(eᵛ[k], M, 𝟙) / (λᵛ[k] * innerProd(eᵛ[k], M, eᵛ[k]))
     end
 
     # ϕ̄ = ϕ̄₀ * innerProd(𝟙, M, g) / innerProd(𝟙, M, 𝟙)
-    ϕ = ϕ̆ #.+ ϕ̄
+    # ϕ = ϕ̆ .+ ϕ̄
 
-    return ϕ, ϕ̆Spectrum
+    return ϕ̆ #, ϕ̆Spectrum
 end
 
 export innerProd

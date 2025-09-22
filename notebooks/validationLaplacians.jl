@@ -15,28 +15,17 @@ using FromFile
 inputSystem="NoHole"
 
 
-if inputSystem == "OldSystem"
-    # conditionsDict    = load(datadir("referenceSystems", "oldPaper", "dataFinal.jld2"))
-    # @unpack  = conditionsDict["params"]
-    matricesDict = load(datadir("referenceSystems", "oldPaper", "matricesFinal.jld2"))
-    @unpack A,B,C,R,F,cellAreas,cellPressures,cellTensions,cellPerimeters = matricesDict["matrices"]
-    cellEffectivePressures = cellPressures .- cellTensions.*cellPerimeters./(2.0.*cellAreas)
-    dropzeros!(A)
-    dropzeros!(B)
-    dropzeros!(C)
-else 
-    fileName = datadir("referenceSystems", "$(inputSystem)_testSystem.jld2")
-    importedData = load(fileName)
-    R = importedData["R"]
-    A = importedData["A"]
-    B = importedData["B"]
-    F = importedData["F"]
-    cellTensions = importedData["cellTensions"]
-    cellPressures = importedData["cellPressures"]
-    cellPerimeters = importedData["cellPerimeters"]
-    cellAreas = importedData["cellAreas"]
-    cellEffectivePressures = cellPressures .+ cellTensions.*cellPerimeters./(2.0.*cellAreas)
-end
+fileName = datadir("referenceSystems", "$(inputSystem)_testSystem.jld2")
+importedData = load(fileName)
+R = importedData["R"]
+A = importedData["A"]
+B = importedData["B"]
+F = importedData["F"]
+cellTensions = importedData["cellTensions"]
+cellPressures = importedData["cellPressures"]
+cellPerimeters = importedData["cellPerimeters"]
+cellAreas = importedData["cellAreas"]
+cellEffectivePressures = cellPressures .+ cellTensions.*cellPerimeters./(2.0.*cellAreas)
 
 I = size(B,1)
 J = size(B,2)
@@ -47,29 +36,52 @@ linkTriangleAreas = findCellLinkTriangleAreas(R, A, B)
 cellPolygons = findCellPolygons(R, A, B)
 𝐡 = hNetwork(R, A, B, F)
 
-peripheralVertices = findPeripheralVertices(A, B).==1
-peripheralCells = findPeripheralCells(B).==1
+peripheralEdges = findPeripheralEdges(B).==1
+notPeripheralEdges = findPeripheralEdges(B).==0
 
-ϕ = rand(size(A,2))
-Phi = rand(size(B,1))
-u = rand(size(B,1))
-U = rand(size(A,2))
+curlᶜh = curlᶜ(R, A, B, 𝐡)
+curlᵛh = curlᵛspokes(R, A, B, 𝐡)
+divᶜh = divᶜ(R, A, B, 𝐡)
+divᵛh = divᵛsuppress(R, A, B, 𝐡)
+cocurlᶜh = cocurlᶜ(R, A, B, 𝐡)
+cocurlᵛh = cocurlᵛspokes(R, A, B, 𝐡)
+codivᶜh = codivᶜ(R, A, B, 𝐡)
+codivᵛh = codivᵛsuppress(R, A, B, 𝐡)
 
-L_𝒱 = geometricLv(R, A, B)
-L_𝒞 = geometricLv(R, A, B)
-L_ℱ = geometricLv(R, A, B)
-L_𝒯 = geometricLv(R, A, B)
+Lv, Lvreindexing = geometricLvHatReduced(R, A, B)
+Lf, Lfreindexing = geometricLfHatReduced(R, A, B)
+Lc, Lcreindexing = geometricLcHatReduced(R, A, B)
+Lt, Ltreindexing = geometricLtHatReduced(R, A, B)
+H = Diagonal(cellAreas[Lcreindexing])
+E = Diagonal(linkTriangleAreas[Lvreindexing])
 
-gradᵛϕ = gradᵛ(R, A, ϕ)
-minusdivᵛgradᵛϕ = -divᵛsuppress(R, A, B, gradᵛϕ)
-@show L_𝒱*ϕ == minusdivᵛgradᵛϕ
-gradᶜPhi = gradᶜ(R, A, B, Phi)
-minusdivᶜgradᶜPhi = -divᶜsuppress(R, A, B, gradᶜPhi)
-@show L_𝒞*Phi == minusdivᶜgradᶜPhi
-rotᶜu = rotᶜ(R, A, B, u)
-curlᶜrotᶜu = curlᶜ(R, A, B, rotᶜu)
-@show L_ℱ*u == curlᶜrotᶜu
-rotᵛU = rotᵛ(R, A, B, U)
-curlᵛrotᵛU = curlᵛ(R, A, B, rotᵛU)
-@show L_𝒯*U == curlᵛrotᵛU
+ϕpar, ϕparspectrum = penrosePseudoInversion(Lv, -1.0.*divᵛh[Lvreindexing], E)
+ϕpar2 = zeros(K)
+ϕpar2[Lvreindexing] .= ϕpar
+divᵛhDif = Lv*ϕpar2 .+ divᵛh
+
+ϕperp, ϕperpspectrum = penrosePseudoInversion(Lv, -1.0.*codivᵛh[Lvreindexing], E)
+ϕperp2 = zeros(K)
+ϕperp2[Lvreindexing] .= ϕperp
+codivᵛhDif = Lv*ϕperp2 .+ codivᵛh
+
+upar, uparspectrum = penrosePseudoInversion(Lf, cocurlᶜh[Lfreindexing], H)
+cocurlᶜhDif = Lf*upar .- cocurlᶜh
+
+uperp, uperpspectrum = penrosePseudoInversion(Lf, curlᶜh[Lfreindexing], H)
+curlᶜhDif = Lf*uperp .- curlᶜh
+
+ϕCapitalpar, ϕCapitalparspectrum = penrosePseudoInversion(Lc, -1.0.*divᶜh[Lcreindexing], H)
+divᶜhDif = Lc*ϕCapitalpar .+ divᶜh
+ϕCapitalperp, ϕCapitalperpspectrum = penrosePseudoInversion(Lc, -1.0.*codivᶜh[Lcreindexing], H)
+codivᶜhDif = Lc*ϕCapitalperp .+ codivᶜh
+
+Upar, Uparspectrum = penrosePseudoInversion(Lt, cocurlᵛh[Ltreindexing], E)
+Upar2 = zeros(K)
+Upar2[Ltreindexing] .= Upar
+cocurlᵛhDif = Lt*Upar2 .- cocurlᵛh
+Uperp, Uperpspectrum = penrosePseudoInversion(Lt, curlᵛh[Ltreindexing], E)
+Uperp2 = zeros(K)
+Uperp2[Ltreindexing] .= Uperp
+curlᵛhDif = Lt*Uperp2 .- curlᵛh
 

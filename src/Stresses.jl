@@ -13,28 +13,28 @@ using SparseArrays
 using LinearAlgebra
 using StaticArrays
 
+# ~\ref{eq:shearstress}
 function ζ(R, A, B, m, zperp)
-    Lprimal = edgeLaplacianPrimal(R, A, B)
+    # Lprimal = edgeLaplacianPrimal(R, A, B)
+    # wᵐ = (eigen(Matrix(Lprimal)).vectors)[:,m]
+    # 𝐭̂ = normalize.(findEdgeTangents(R, A))
+    # aᵢ = findCellAreas(R, A, B)
+    # tmp = [B[i,j].*wᵐ[j].*outerProd(𝐭̂[j],𝐭̂[j])./aᵢ[i] for i=1:size(B,1), j=1:size(B,2)]
+    # ζᵐᵢtmp = dropdims(sum(tmp, dims=2), dims=2)
+    # ζᵐᵢ = zperp.*sqrt.(-1.0.*det.(ζᵐᵢtmp))
+    # return ζᵐᵢ
+    B̂ = findB̂(A, B)
+    jᵖ = findPeripheralEdges(B)
+    Lprimal = edgeLaplacianPrimalHat(R, A, B)
     wᵐ = (eigen(Matrix(Lprimal)).vectors)[:,m]
-    𝐭̂ = normalize.(findEdgeTangents(R, A))
-    # ζᵐᵢ = zeros(size(B,1))
+    𝐭̂ = normalize.(findEdgeTangents(R, A))[jᵖ.==0]
     aᵢ = findCellAreas(R, A, B)
-    tmp = [B[i,j].*wᵐ[j].*outerProd(𝐭̂[j],𝐭̂[j])./aᵢ[i] for i=1:size(B,1), j=1:size(B,2)]
-    # ζᵐᵢtmp1 = dropdims(sum(tmp, dims=2), dims=2)
-    # ζᵐᵢtmp2 = -1.0.*det.(ζᵐᵢtmp1)
-    # ζᵐᵢ = zperp.*sqrt.(ζᵐᵢtmp2)
+    tmp = [B̂[i,j].*wᵐ[j].*outerProd(𝐭̂[j],𝐭̂[j])./aᵢ[i] for i=1:size(B,1), j=1:(size(B,2)-sum(jᵖ))]
     ζᵐᵢtmp = dropdims(sum(tmp, dims=2), dims=2)
     ζᵐᵢ = zperp.*sqrt.(-1.0.*det.(ζᵐᵢtmp))
-    # ζᵐᵢ = zperp.*sqrt.(ζᵐᵢtmp2)
-
-    # for i=1:size(B,1)
-    # #    tmp = sum([B[i,j].*wᵐ[j].*(𝐭̂[j]*𝐭̂[j]') for j=1:size(B,2)])
-    #    tmp = sum([B[i,j].*wᵐ[j].*outerProd(𝐭̂[j],𝐭̂[j]) for j=1:size(B,2)])
-    #    tmpDet = det(tmp)
-    #    ζᵐᵢ[i] = zperp*sqrt(-tmpDet)
-    # end
     return ζᵐᵢ
 end 
+
 
 function σ(R, A, B, 𝐡ⱼ)
     I = size(B,1)
@@ -50,11 +50,16 @@ function σ(R, A, B, 𝐡ⱼ)
 end
 
 pEff(cellAreas, cellPressures, cellPerimeters, cellTensions) = cellPressures .- cellTensions.*cellPerimeters./(2.0.*cellAreas)
-function pEff(R, A, B, γ, L₀) 
+function pEff(R, A, B, γ, L₀; forceModel="log") 
     cellAreas = findCellAreas(R, A, B)
     cellPerimeters = findCellPerimeterLengths(R, A, B)
-    cellTensions =  γ .* L₀ .* log.(cellPerimeters ./ L₀)
-    cellPressures =  log.(cellAreas)    
+    if forceModel=="log"
+        cellTensions = γ .* L₀ .* log.(cellPerimeters ./ L₀)
+        cellPressures = log.(cellAreas)
+    else
+        cellTensions = γ .*(cellPerimeters .- L₀)
+        cellPressures = cellAreas
+    end
     pEff = cellPressures .- cellTensions.*cellPerimeters./(2.0.*cellAreas)
     return pEff
 end

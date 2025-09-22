@@ -75,8 +75,8 @@ for (col,inputSystem) in enumerate(inputSystems)
     𝐡 = hNetwork(R, A, B, F)
     # 𝐡 = [SVector{2,Float64}(1.0,0.0) for _=1:J]
     
-    boundaryVertices = findBoundaryVertices(A, B).==1
-    boundaryCells = findBoundaryCells(B).==1
+    peripheralVertices = findPeripheralVertices(A, B).==1
+    peripheralCells = findPeripheralCells(B).==1
 
     curlᶜh = curlᶜ(R, A, B, 𝐡)
     curlᶜhMax = max(maximum(abs.(curlᶜh)), 0.0001)
@@ -101,126 +101,211 @@ for (col,inputSystem) in enumerate(inputSystems)
     
     H = Diagonal(cellAreas)
     E = Diagonal(linkTriangleAreas)
-    Lv = geometricLv(R, A, B)
-    Lf = geometricLf(R, A, B)
-    Lc = geometricLc(R, A, B)
-    Lt = geometricLt(R, A, B)
+    Lv = geometricLvHat(R, A, B)
+    Lf = geometricLfHat(R, A, B)
+    Lc = geometricLcHat(R, A, B)
+    Lt = geometricLtHat(R, A, B)
+
     # ϕpar Lv -divᵛ
-    ϕpar, ϕparspectrum = penrosePseudoInversion(Lv, -1.0.*divᵛh, E)
-    # @show maximum(abs.(Lv*ϕpar .+ divᵛh))
+    g = -1.0.*copy(divᵛh)
+    M = copy(E)
+    n = length(g)
+    𝟙 = ones(Float64,n)
+    g[peripheralVertices.==1] .= 0.0
+    λᵛ = (eigen(Matrix(Lt))).values
+    eᵛs = (eigen(Matrix(Lt))).vectors
+    eᵛ = [eᵛs[:, k] for k = 1:length(g)] # Vector of eigenvectors
+    ḡ = innerProd(𝟙, M, g) / innerProd(𝟙, M, 𝟙)
+    ğ = g .- ḡ
+    ğ[peripheralVertices.==1] .= 0.0
+    ϕ̆ = zeros(n)
+    ϕ̆Spectrum = Float64[]
+    ϕ̄₀ = zeros(n)
+    for k = findfirst(x->x>1e-10, λᵛ):length(g)
+        amplitude = innerProd(eᵛ[k], M, ğ) / (λᵛ[k] * innerProd(eᵛ[k], M, eᵛ[k]))
+        ϕ̆ .+= amplitude .* eᵛ[k]
+        push!(ϕ̆Spectrum, amplitude)
+    end
+    # ϕ = ϕ̆ #.+ ϕ̄
+    ϕpar = copy(ϕ̆)
+    # ϕpar, ϕparspectrum = penrosePseudoInversion(Lv, -1.0.*divᵛh, E)
     ϕparMax = max(maximum(abs.(ϕpar)), 0.0001)
-    ϕparLims = (-ϕparMax, ϕparMax)
+    # ϕparLims = (-ϕparMax, ϕparMax)
+    
     # ϕperp Lv -codivᵛ
-    ϕperp, ϕperpspectrum = penrosePseudoInversion(Lv, -1.0.*codivᵛh, E)
-    # @show maximum(abs.(Lv*ϕperp .+ codivᵛh))
+    g = -1.0.*copy(codivᵛh)
+    M = copy(E)
+    n = length(g)
+    𝟙 = ones(Float64,n)
+    g[peripheralVertices.==1] .= 0.0
+    λᵛ = (eigen(Matrix(Lt))).values
+    eᵛs = (eigen(Matrix(Lt))).vectors
+    eᵛ = [eᵛs[:, k] for k = 1:length(g)] # Vector of eigenvectors
+    ḡ = innerProd(𝟙, M, g) / innerProd(𝟙, M, 𝟙)
+    ğ = g .- ḡ
+    ğ[peripheralVertices.==1] .= 0.0
+    ϕ̆ = zeros(n)
+    ϕ̆Spectrum = Float64[]
+    ϕ̄₀ = zeros(n)
+    for k = findfirst(x->x>1e-10, λᵛ):length(g)
+        amplitude = innerProd(eᵛ[k], M, ğ) / (λᵛ[k] * innerProd(eᵛ[k], M, eᵛ[k]))
+        ϕ̆ .+= amplitude .* eᵛ[k]
+        push!(ϕ̆Spectrum, amplitude)
+    end
+    # ϕ = ϕ̆ #.+ ϕ̄
+    ϕperp = copy(ϕ̆)
+    # ϕperp, ϕperpspectrum = penrosePseudoInversion(Lv, -1.0.*codivᵛh, E)
     ϕperpMax = max(maximum(abs.(ϕperp)), 0.0001)
-    ϕperpLims = (-ϕperpMax, ϕperpMax)
+    # ϕperpLims = (-ϕperpMax, ϕperpMax)
+    
     # upar Lf cocurlᶜ
     upar, uparspectrum = penrosePseudoInversion(Lf, cocurlᶜh, H)
-    # @show maximum(abs.(Lf*upar .- cocurlᶜh))
     uparMax = max(maximum(abs.(upar)), 0.0001)
-    uparLims = (-uparMax, uparMax)
+    # uparLims = (-uparMax, uparMax)
     # uperp Lf curlᶜ
     uperp, uperpspectrum = penrosePseudoInversion(Lf, curlᶜh, H)
-    # @show maximum(abs.(Lf*uperp .- curlᶜh))
     uperpMax = max(maximum(abs.(uperp)), 0.0001)
-    uperpLims = (-uperpMax, uperpMax)
+    # uperpLims = (-uperpMax, uperpMax)
+    
     # ϕCapitalpar Lc -divᶜ
     ϕCapitalpar, ϕCapitalparspectrum = penrosePseudoInversion(Lc, -1.0.*divᶜh, H)
-    # @show maximum(abs.(Lc*ϕCapitalpar .+ divᶜh))
     ϕCapitalparMax = max(maximum(abs.(ϕCapitalpar)), 0.0001)
-    ϕCapitalparLims = (-ϕCapitalparMax, ϕCapitalparMax)
+    # ϕCapitalparLims = (-ϕCapitalparMax, ϕCapitalparMax)
     # ϕCapitalperp Lc -codivᶜ
     ϕCapitalperp, ϕCapitalperpspectrum = penrosePseudoInversion(Lc, -1.0.*codivᶜh, H)
-    # @show maximum(abs.(Lc*ϕCapitalperp .+ codivᶜh))
     ϕCapitalperpMax = max(maximum(abs.(ϕCapitalperp)), 0.0001)
-    ϕCapitalperpLims = (-ϕCapitalperpMax, ϕCapitalperpMax)
+    # ϕCapitalperpLims = (-ϕCapitalperpMax, ϕCapitalperpMax)
+    
     # Upar Lt cocurlᵛ
-    Upar, Uparspectrum = penrosePseudoInversion(Lt, cocurlᵛh, E)
-    # @show maximum(abs.(Lt*Upar .- cocurlᵛh))
+    g = copy(cocurlᵛh)
+    M = copy(E)
+    n = length(g)
+    𝟙 = ones(Float64,n)
+    g[peripheralVertices.==1] .= 0.0
+    λᵛ = (eigen(Matrix(Lt))).values
+    eᵛs = (eigen(Matrix(Lt))).vectors
+    eᵛ = [eᵛs[:, k] for k = 1:length(g)] # Vector of eigenvectors
+    ḡ = innerProd(𝟙, M, g) / innerProd(𝟙, M, 𝟙)
+    ğ = g .- ḡ
+    ğ[peripheralVertices.==1] .= 0.0
+    ϕ̆ = zeros(n)
+    ϕ̆Spectrum = Float64[]
+    ϕ̄₀ = zeros(n)
+    for k = findfirst(x->x>1e-10, λᵛ):length(g)
+        amplitude = innerProd(eᵛ[k], M, ğ) / (λᵛ[k] * innerProd(eᵛ[k], M, eᵛ[k]))
+        ϕ̆ .+= amplitude .* eᵛ[k]
+        push!(ϕ̆Spectrum, amplitude)
+    end
+    # ϕ = ϕ̆ #.+ ϕ̄
+    # Upar, Uparspectrum = penrosePseudoInversion(Lt, cocurlᵛh, E)
+    Upar = copy(ϕ̆)
     UparMax = max(maximum(abs.(Upar)), 0.0001)
-    UparLims = (-UparMax, UparMax)
+    # UparLims = (-UparMax, UparMax)
+    
     # Uperp Lt curlᵛ
-    Uperp, Uperpspectrum = penrosePseudoInversion(Lt, curlᵛh, E)
-    # @show maximum(abs.(Lt*Uperp .- curlᵛh))
+    g = copy(curlᵛh)
+    M = copy(E) 
+    n = length(g)
+    𝟙 = ones(Float64,n)
+    g[peripheralVertices.==1] .= 0.0
+    λᵛ = (eigen(Matrix(Lt))).values
+    eᵛs = (eigen(Matrix(Lt))).vectors
+    eᵛ = [eᵛs[:, k] for k = 1:length(g)] # Vector of eigenvectors
+    ḡ = innerProd(𝟙, M, g) / innerProd(𝟙, M, 𝟙)
+    ğ = g .- ḡ
+    ğ[peripheralVertices.==1] .= 0.0
+    ϕ̆ = zeros(n)
+    ϕ̆Spectrum = Float64[]
+    ϕ̄₀ = zeros(n)
+    for k = findfirst(x->x>1e-10, λᵛ):length(g)
+        amplitude = innerProd(eᵛ[k], M, ğ) / (λᵛ[k] * innerProd(eᵛ[k], M, eᵛ[k]))
+        ϕ̆ .+= amplitude .* eᵛ[k]
+        push!(ϕ̆Spectrum, amplitude)
+    end
+    # ϕ = ϕ̆ #.+ ϕ̄
+    # Uperp, Uperpspectrum = penrosePseudoInversion(Lt, curlᵛh, E)
+    Uperp = copy(ϕ̆)
     UperpMax = max(maximum(abs.(Uperp)), 0.0001)
-    UperpLims = (-UperpMax, UperpMax)
+    # UperpLims = (-UperpMax, UperpMax)
 
-    block1Max = maximum([ϕCapitalparMax, UparMax])
-    block1Lims = (-block1Max, block1Max)
-    block2Max = maximum([ϕCapitalperpMax, UperpMax])
-    block2Lims = (-block2Max, block2Max)
-    
-    
-    # row3Max = max(uperpMax, ϕCapitalperpMax)
-    # row3Lims = (-row3Max, row3Max)
-    # row4Max = max(ϕperpMax, UperpMax)
-    # row4Lims = (-row4Max, row4Max)
+    row1Max = maximum([ϕCapitalparMax,uparMax])
+    row1Lims = (-row1Max, row1Max)
+    row2Max = maximum([UparMax, ϕparMax])
+    row2Lims = (-row2Max, row2Max)
+    row3Max = max(uperpMax, ϕCapitalperpMax)
+    row3Lims = (-row3Max, row3Max)
+    row4Max = max(ϕperpMax, UperpMax)
+    row4Lims = (-row4Max, row4Max)
+
+    @show row1Lims
+    @show row2Lims
+    @show row3Lims
+    @show row4Lims
 
     #%%
     gl = GridLayout(fig[1,1+col*2-1])
 
-    # push!(axes, Axis(gl[1,1], aspect=DataAspect()))
-    # for i=1:I
-    #     poly!(axes[end],cellPolygons[i],color=upar[i],colorrange=block1Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
-    # end
-    # Label(gl[1,1,Bottom()], L"u^\parallel", fontsize = 36)
+    push!(axes, Axis(gl[1,1], aspect=DataAspect()))
+    for i=1:I
+        poly!(axes[end],cellPolygons[i],color=upar[i],colorrange=row1Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
+    end
+    Label(gl[1,1,Bottom()], L"u^\parallel", fontsize = 36)
     push!(axes, Axis(gl[1,2], aspect=DataAspect()))
     for i=1:I
-        poly!(axes[end],cellPolygons[i],color=ϕCapitalpar[i],colorrange=block1Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
+        poly!(axes[end],cellPolygons[i],color=ϕCapitalpar[i],colorrange=row1Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
     end
     Label(gl[1,2,Bottom()], L"\Phi^\parallel", fontsize = 36)
-    # Colorbar(gl[1:2,3],limits=block1Lims,colormap=:bam, height=Relative(0.5))
+    Colorbar(gl[1,3],limits=row1Lims,colormap=:bam, height=Relative(0.8))
 
-    # push!(axes, Axis(gl[2,1], aspect=DataAspect()))
-    # for k=1:K
-    #     poly!(axes[end],linkTriangles[k],color=ϕpar[k],colorrange=block1Lims,colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
-    # end
-    # for i=1:I
-    #     poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
-    # end
-    # Label(gl[2,1,Bottom()], L"\phi^\parallel", fontsize = 36)
+    push!(axes, Axis(gl[2,1], aspect=DataAspect()))
+    for k=1:K
+        poly!(axes[end],linkTriangles[k],color=ϕpar[k],colorrange=row2Lims,colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
+    end
+    for i=1:I
+        poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
+    end
+    Label(gl[2,1,Bottom()], L"\phi^\parallel", fontsize = 36)
     push!(axes, Axis(gl[2,2], aspect=DataAspect()))
     for k=1:K
-        poly!(axes[end],linkTriangles[k],color=Upar[k],colorrange=block1Lims,colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
+        poly!(axes[end],linkTriangles[k],color=Upar[k],colorrange=row2Lims,colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
     end
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
     Label(gl[2,2,Bottom()], L"U^\parallel", fontsize = 36)
-    Colorbar(gl[1:2,3],limits=block1Lims,colormap=:bam, height=Relative(0.5))
+    Colorbar(gl[2,3],limits=row2Lims,colormap=:bam, height=Relative(0.8))
 
-    # push!(axes, Axis(gl[3,1], aspect=DataAspect()))
-    # for i=1:I
-    #     poly!(axes[end],cellPolygons[i],color=uperp[i],colorrange=block2Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
-    # end
-    # Label(gl[3,1,Bottom()], L"u^\perp", fontsize = 36)
+    push!(axes, Axis(gl[3,1], aspect=DataAspect()))
+    for i=1:I
+        poly!(axes[end],cellPolygons[i],color=uperp[i],colorrange=row3Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
+    end
+    Label(gl[3,1,Bottom()], L"u^\perp", fontsize = 36)
     push!(axes, Axis(gl[3,2], aspect=DataAspect()))
     for i=1:I
-        poly!(axes[end],cellPolygons[i],color=-ϕCapitalperp[i],colorrange=block2Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
+        poly!(axes[end],cellPolygons[i],color=-ϕCapitalperp[i],colorrange=row3Lims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
     end
     Label(gl[3,2,Bottom()], L"-\Phi^\perp", fontsize = 36)
-    # Colorbar(gl[3,3],limits=block2Lims,colormap=:bam, height=Relative(0.8))
+    Colorbar(gl[3,3],limits=row3Lims,colormap=:bam, height=Relative(0.8))
 
-    # push!(axes, Axis(gl[4,1], aspect=DataAspect()))
-    # for k=1:K
-    #     poly!(axes[end],linkTriangles[k],color=-ϕperp[k],colorrange=block2Lims, colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
-    # end
-    # for i=1:I
-    #     poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
-    # end
-    # Label(gl[4,1,Bottom()], L"-\phi^\perp", fontsize = 36)
+    push!(axes, Axis(gl[4,1], aspect=DataAspect()))
+    for k=1:K
+        poly!(axes[end],linkTriangles[k],color=-ϕperp[k],colorrange=row4Lims, colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
+    end
+    for i=1:I
+        poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
+    end
+    Label(gl[4,1,Bottom()], L"-\phi^\perp", fontsize = 36)
     push!(axes, Axis(gl[4,2], aspect=DataAspect()))
     for k=1:K
-        poly!(axes[end],linkTriangles[k],color=Uperp[k],colorrange=block2Lims, colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
+        poly!(axes[end],linkTriangles[k],color=Uperp[k],colorrange=row4Lims, colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
     end
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
     Label(gl[4,2,Bottom()], L"U^\perp", fontsize = 36)
-    Colorbar(gl[3:4,3],limits=block2Lims, colormap=:bam, height=Relative(0.5))
+    Colorbar(gl[4,3],limits=row4Lims, colormap=:bam, height=Relative(0.8))
     
-    # Label(gl[0,1], "Primal", fontsize=48)
+    Label(gl[0,1], "Primal", fontsize=48)
     Label(gl[0,2], "Dual", fontsize=48)
     
     rowsize!(gl, 0, Relative(0.04))
@@ -229,16 +314,15 @@ for (col,inputSystem) in enumerate(inputSystems)
     rowsize!(gl, 3, Relative(0.24))
     rowsize!(gl, 4, Relative(0.24))
 
-    # colsize!(gl, 1, Relative(0.495))
-    colsize!(gl, 2, Relative(0.99))
+    colsize!(gl, 1, Relative(0.495))
+    colsize!(gl, 2, Relative(0.495))
     colsize!(gl, 3, Relative(0.01))
     
 end
 
 Label(fig[2,2, Top()], L"(a)", fontsize=48)
 Label(fig[2,4, Top()], L"(b)", fontsize=48)
-Label(fig[2,6, Top()], L"(b)", fontsize=48)
-# Label(fig[2,1+5, Top()], "(c)", fontsize=48)
+Label(fig[2,6, Top()], L"(c)", fontsize=48)
 rowsize!(fig.layout, 1, Relative(0.98))
 rowsize!(fig.layout, 2, Relative(0.02))
 
@@ -258,7 +342,5 @@ resize_to_layout!(fig)
 hidedecorations!.(axes)
 hidespines!.(axes)
 display(fig)
-# save(plotsdir("figurePotentials_$(suppressOrNot)_$(spokesOrNot).png"), fig)
 save(plotsdir(inputDir, "figurePotentials.png"), fig)
-# save(plotsdir("figurePotentials_$(suppressOrNot)_$(spokesOrNot).pdf"), fig)
 save(plotsdir(inputDir, "figurePotentials.pdf"), fig)
