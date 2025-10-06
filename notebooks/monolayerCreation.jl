@@ -16,24 +16,28 @@ using OrdinaryDiffEq
 @from "$(srcdir("AblateCells.jl"))" using AblateCells
 
 #%%
-
-subDir = "referenceSystems/quadraticPotentialNoPressure"
+subDir = "referenceSystems/quadraticPotentialNoPressureMultiples"; isdir(datadir(subDir)) ? nothing : mkdir(datadir(subDir))
+# subDir = "referenceSystems/quadraticPotentialNoPressureSpiky"
 systems = ["NoHole", "SingleHole", "DoubleHole", "Large"]
 system = systems[4]
+
+seed = 123456
 
 #%%
 integ1 = vertexModel(abstol = 1e-9,
                     reltol = 1e-9,
                     nRows=11,
-                    nCycles=(system=="Large" ? 4 : 2),
+                    nCycles=(system=="Large" ? 3 : 2),
                     printToggle=1,
                     frameDataToggle=0,
                     frameImageToggle=0,
                     videoToggle=0,
-                    setRandomSeed=12345,
+                    outputToggle=0,
+                    setRandomSeed=seed,
                     divisionToggle=1,
                     pressureExternal=0.0,
                     energyModel="quadratic",
+                    # spiky=true,
                 )
 
 
@@ -140,19 +144,10 @@ scatter!(ax3, Point{2,Float64}.(cellCentres2), color=(:black,1.0), markersize=10
 annotations!(ax3, string.(collect(1:size(B1,1)))[Not(ablatedCells)], Point{2,Float64}.(cellCentres2), fontsize=12, color=(:black,1.0))
 # display(fig)
 
-R = Rfinal
-A = Afinal
-B = Bfinal
-F = Ffinal
-# cellTensions = cellTensions
-# cellPressures = cellPressures
-# cellPerimeters = cellPerimeters
-# cellAreas
-
-jldsave(datadir(subDir, "$(system)_testSystem.jld2"); R,
-    A, 
-    B, 
-    F, 
+jldsave(datadir(subDir, "$(system)_testSystem.jld2"); R=Rfinal,
+    A=Afinal, 
+    B=Bfinal, 
+    F=Ffinal, 
     cellTensions, 
     cellPressures, 
     cellPerimeters, 

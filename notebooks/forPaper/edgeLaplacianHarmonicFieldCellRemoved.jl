@@ -53,18 +53,19 @@ else
                         energyModel="quadratic",
                     )
     #%%
-    R2 = reinterpret(SVector{2,Float64}, integ2.u) 
     params2, matrices2 = integ2.p
+    @show maximum(norm.(sum(F2, dims=2)))
+    R2 = reinterpret(SVector{2,Float64}, integ2.u)
     A2 = matrices2.A
     B2 = matrices2.B
     F2 = matrices2.F
-    @show maximum(norm.(sum(F2, dims=2)))
 
     C = findC(A, B)
     centralCellVertices = R[findall(x->x!=0, C[centralCell, :])]
     systemCOM2 = sum(centralCellVertices)./length(centralCellVertices)
-
-    jldsave(datadir("referenceSystems", inputDir, "$(inputSystem)Ablated_testSystem.jld2"); R2,
+    
+    jldsave(datadir("referenceSystems", inputDir, "$(inputSystem)Ablated_testSystem.jld2"); 
+        R2,
         A2, 
         B2, 
         F2, 
@@ -98,11 +99,11 @@ zperp = 1.0
 χⱼLims = (-2.0, log10(maximum(χⱼ)))
 push!(axes, Axis(fig[1,1], aspect=DataAspect(), alignmode=Inside()))
 # scatter!(axes[end], Point{2,Float64}(centralCellCOM), color=:red)
+for i=1:size(B2,1)
+    poly!(axes[end], cellPolygons[i], color=(:black, 0.25), strokecolor=(:black, 0.1), strokewidth=1.0)
+end
 for j=1:(size(B2,2)-sum(jᵖ))
     poly!(axes[end], edgeQuadrilaterals[j], color=log10(χⱼ[j]), strokecolor=(:white, 0.0), strokewidth=0, colormap=Reverse(:devon), colorrange=χⱼLims)
-end
-for i=1:size(B2,1)
-    poly!(axes[end], cellPolygons[i], color=(:white, 0.0), strokecolor=(:black, 0.2), strokewidth=0.5)
 end
 scatter!(axes[end], [Point{2,Float64}(systemCOM2)], color=(:red,0.5), markersize=5)
 hidedecorations!(axes[end])
@@ -115,7 +116,7 @@ lines!(axes[end], log10.(dummyDists), log10.(0.3./dummyDists), color=(:black, 0.
 lines!(axes[end], log10.(dummyDists), log10.(0.3./(dummyDists).^3), color=(:black, 0.75), linestyle=:dash)
 ylims!(axes[end], (minimum(log10.(χⱼ)),1.0))
 xlims!(axes[end], (minimum(log10.(radii)),maximum(log10.(radii))))
-axes[end].xlabel = L"\log_{10}\left(r_j\right)"
+axes[end].xlabel = L"\log_{10}\left(c_j\right)"
 axes[end].ylabel = L"\log_{10}\left(\chi_j\right)"
 Label(fig[2,3], popfirst!(subfigureLabels), fontsize=24)
 

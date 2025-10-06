@@ -38,13 +38,13 @@ for (col,inputSystem) in enumerate(inputSystems)
     jᵖ = findPeripheralEdges(B)
     jⁱⁿ = jᵖ.==0
     𝐜ⱼ = findEdgeMidpoints(R, A)
+    𝐂ⱼ = findCellLinkMidpoints(R, A, B)
 
     cellAreas = findCellAreas(R, A, B)
     linkTriangles = findCellLinkTriangles(R, A, B)
     linkTriangleAreas = findCellLinkTriangleAreas(R, A, B)
     cellPolygons = findCellPolygons(R, A, B)
     𝐡 = hNetwork(R, A, B, F)
-    # 𝐡 = [SVector{2,Float64}(1.0,0.0) for _=1:J]
 
     curlᶜh = curlᶜ(R, A, B, 𝐡)   
     curlᵛh = curlᵛspokes(R, A, B, 𝐡)   
@@ -71,7 +71,6 @@ for (col,inputSystem) in enumerate(inputSystems)
     ϕpar = L̂v\(-1.0.*divᵛh[Lvreindexing])
     ϕpar2 = zeros(K)
     ϕpar2[Lvreindexing] .= ϕpar
-
     # ϕperp Lv -codivᵛ
     ϕperp = L̂v\(-1.0.*codivᵛh[Lvreindexing])
     ϕperp2 = zeros(K)
@@ -108,46 +107,72 @@ for (col,inputSystem) in enumerate(inputSystems)
     # rot u = rotᶜ uperp + corotᶜ upar 
     # rot U = rotᵛ Uperp + corotᵛ Upar
 
-    𝐡_hh = gradᵛ(R, A, ϕpar2) + cogradᵛ(R, A, B, ϕperp2) + rotᶜ(R, A, B, uperp) + corotᶜ(R, A, B, upar) 
-    𝐡_hh .= [𝐡_hh[j].-𝐡_hh[1] for j=1:size(B,2)]
-    𝐇_hh = gradᶜ(R, A, B, ϕCapitalpar) + cogradᶜ(R, A, B, ϕCapitalperp) + rotᵛspokes(R, A, B, Uperp2) + corotᵛspokes(R, A, B, Upar2)
-    𝐇_hh .= [𝐇_hh[j].-𝐇_hh[1] for j=1:size(B,2)]
+    𝐡_hh = primalHH(R, A, B, ϕpar2, ϕperp2, upar, uperp)
+    𝐱 = 𝐡.-𝐡_hh
+    𝐇_hh = dualHH(R, A, B, ϕCapitalpar, ϕCapitalperp, Upar2, Uperp2)
+    𝐗 = 𝐡.-𝐇_hh
 
-    #%%
-    gl = GridLayout(fig[1,col])
+    @show maximum(norm.(𝐱[jⁱⁿ]))
+    @show maximum(norm.(𝐡[jⁱⁿ]))
+    @show maximum(norm.(𝐗[jⁱⁿ]))
+    # @show maximum(norm.(𝐇[jⁱⁿ]))
+
+    gl = GridLayout(fig[1,col*2])
     
     push!(axes, Axis(gl[1,1], aspect=DataAspect()))
-    # for i=1:I
-    #     orderedVerts, orderedEdges = orderAroundCell(A, B, i)
-    #     lines!(axes[end], Point{2,Float64}.(𝐡[orderedEdges[0:end]]), color=(:blue, 0.5))
-    #     # lines!(axes[end], Point{2,Float64}.(𝐡_hh[orderedEdges[0:end]]), color=(:red, 0.5))
-    #     lines!(axes[end], Point{2,Float64}.(𝐇_hh[orderedEdges[0:end]]), color=(:green, 0.5))
-    # end
-    # for j=1:J
-    #     if jⁱⁿ[j] 
-    #         lines!(axes[end], Point{2,Float64}.([𝐡[j], 𝐡_hh[j]]), color=(:blue, 0.5))
-    #     end
-    # end
-    scatter!(axes[end], Point{2,Float64}.(𝐡_hh[jⁱⁿ]), color=(:red, 0.5))
-    scatter!(axes[end], Point{2,Float64}.(𝐡[jⁱⁿ]), color=(:blue, 0.5))
+    for i=1:I 
+        poly!(axes[end], cellPolygons[i], color=(:black, 0.1), strokewidth=1, strokecolor=(:black,0.1))
+    end
+    # arrowColours = [(:blue, norm(𝐱[j])/maximum(norm.(𝐱[jⁱⁿ]))) for j=1:J]
+    arrowColours = [(:blue, norm(𝐱[j])/0.0464) for j=1:J]
+    arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ)[jⁱⁿ], Vec{2,Float64}.(𝐱[jⁱⁿ]), color=arrowColours[jⁱⁿ], linewidth=2, lengthscale=20.0)
+    # arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ)[jⁱⁿ], Vec{2,Float64}.(𝐱[jⁱⁿ]), color=:red, linewidth=2, lengthscale=10.0)
     Label(gl[1,1,Bottom()], popfirst!(subfigureLabels), fontsize=24) 
-    
+
     push!(axes, Axis(gl[2,1], aspect=DataAspect()))
     for i=1:I 
-        poly!(axes[end], cellPolygons[i], color=(:white, 0.0), strokewidth=1, strokecolor=(:black,1.0))
+        poly!(axes[end], cellPolygons[i], color=(:black, 0.1), strokewidth=1, strokecolor=(:black,0.1))
     end
-    # Label(fig[2, 3, Bottom()], "x")
-    arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ)[jⁱⁿ], Point{2,Float64}.(([𝐡_hh[j].-𝐡[j] for j=1:size(B,2)])[jⁱⁿ]), color=:red, linewidth=2, lengthscale=20.0)
+    # arrowColours = [(:green, norm(𝐗[j])/maximum(norm.(𝐗[jⁱⁿ]))) for j=1:J]
+    arrowColours = [(:green, norm(𝐗[j])/0.0464) for j=1:J]
+    arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ)[jⁱⁿ], Vec{2,Float64}.(𝐗[jⁱⁿ]), color=arrowColours[jⁱⁿ], linewidth=2, lengthscale=20.0)
+    # arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ)[jⁱⁿ], Vec{2,Float64}.(𝐗[jⁱⁿ]), color=:red, linewidth=2, lengthscale=10.0)
     Label(gl[2,1,Bottom()], popfirst!(subfigureLabels), fontsize=24) 
 
-    hidedecorations!(axes[end])
-    hidespines!(axes[end])
+
+    rowsize!(gl, 1, Relative(0.5))
+    rowsize!(gl, 2, Relative(0.5))
+    # rowsize!(gl, 3, Relative(0.48))
+    # rowsize!(gl, 4, Relative(0.02))
 
 end
 
-colsize!(fig.layout, 1, Relative(0.33))
-colsize!(fig.layout, 2, Relative(0.33))
-colsize!(fig.layout, 3, Relative(0.33))
+gl = GridLayout(fig[1,1])
+Label(gl[1,1], "Primal", fontsize=24) 
+Label(gl[2,1], "Dual", fontsize=24) 
+rowsize!(gl, 1, Relative(0.5))
+rowsize!(gl, 2, Relative(0.5))
+
+gl = GridLayout(fig[2,1])
+push!(axes, Axis(fig[:,3]))
+vlines!(axes[end], [0.0], color=(:black,0.3), linewidth=5, linestyle=:solid)
+push!(axes, Axis(fig[:,5]))
+vlines!(axes[end], [0.0], color=(:black,0.3), linewidth=5, linestyle=:solid)
+
+hidedecorations!.(axes)
+hidespines!.(axes)
+
+rowsize!(fig.layout, 1, Relative(0.99))
+rowsize!(fig.layout, 2, Relative(0.01))
+colsize!(fig.layout, 1, Relative(0.05))
+colsize!(fig.layout, 2, Relative(0.31))
+colsize!(fig.layout, 3, Relative(0.01))
+colsize!(fig.layout, 4, Relative(0.31))
+colsize!(fig.layout, 5, Relative(0.01))
+colsize!(fig.layout, 6, Relative(0.31))
+
+resize_to_layout!(fig)
 
 display(fig)
-save(plotsdir(inputDir, "midpointsfigureHelmholtz.png"), fig)
+save(plotsdir(inputDir, "figureHelmholtzHodge.png"), fig)
+save(plotsdir(inputDir, "figureHelmholtzHodge.pdf"), fig)

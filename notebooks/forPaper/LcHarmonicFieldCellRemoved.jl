@@ -44,7 +44,6 @@ if isfile(datadir("referenceSystems", inputDir, "$(inputSystem)Ablated_testSyste
     importedData = load(inFile)
     @unpack R2, A2, B2, F2, systemCOM2 = importedData
 else
-    # Rtmp, Atmp, Btmp = ablateCells(R, A, B, [centralCell])
     Rtmp, Atmp, Btmp = ablateCells(R, A, B, ablatedCells)
 
     integ2 = vertexModel(abstol = 1e-9,
@@ -62,21 +61,21 @@ else
                         videoToggle=0,
                         printToggle=1,
                         energyModel="quadratic",
-                        # termSteadyState=true,
                     )
     #%%
-    R2 = reinterpret(SVector{2,Float64}, integ2.u) 
     params2, matrices2 = integ2.p
+    @show maximum(norm.(sum(F2, dims=2)))
+    R2 = reinterpret(SVector{2,Float64}, integ2.u)
     A2 = matrices2.A
     B2 = matrices2.B
     F2 = matrices2.F
-    @show maximum(norm.(sum(F2, dims=2)))
 
     C = findC(A, B)
     centralCellVertices = R[findall(x->x!=0, C[centralCell, :])]
     systemCOM2 = sum(centralCellVertices)./length(centralCellVertices)
-
-    jldsave(datadir("referenceSystems", inputDir, "$(inputSystem)Ablated_testSystem.jld2"); R2,
+    
+    jldsave(datadir("referenceSystems", inputDir, "$(inputSystem)Ablated_testSystem.jld2"); 
+        R2,
         A2, 
         B2, 
         F2, 

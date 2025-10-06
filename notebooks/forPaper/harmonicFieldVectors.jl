@@ -52,7 +52,7 @@ cellPolygons = findCellPolygons(R, A, B)
 (row,col) = (2,1)
 (zpar, zperp) = (1,0)
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
+poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.1), strokewidth=1)
 edgeVectors = μLprimal[1].*(zpar.*𝐞Parallel .+ zperp.*𝐞Perp)
 arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
 arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2, lengthscale=1.0)
@@ -61,7 +61,7 @@ arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), col
 (row,col) = (2,2)
 (zpar, zperp) = (0,1)
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
+poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.1), strokewidth=1)
 edgeVectors = μLprimal[1].*(zpar.*𝐞Parallel .+ zperp.*𝐞Perp)
 arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
 arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2, lengthscale=1.0)
@@ -72,9 +72,9 @@ arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), col
 (row,col) = (2,4)
 (zpar, zperp) = (1,0)
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
+poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.1), strokewidth=1)
 edgeVectors = μLdual[1].*(zpar.*𝐄Parallel .+ zperp.*𝐄Perp)
-arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
+arrowColours = [(:green, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
 arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2, lengthscale=1.0)
 # arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[jᵖ.==0]), Vec{2,Float64}.(edgeVectors[jᵖ.==0]), color=arrowColours[jᵖ.==0], linewidth=2, lengthscale=1.0)
 # arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[jᵖ.!=0]), Vec{2,Float64}.(edgeVectors[jᵖ.!=0]), color=arrowColours[jᵖ.!=0], linewidth=2, lengthscale=1.0)
@@ -83,9 +83,9 @@ arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ), Vec{2,Float64}.(edgeVectors), col
 (row,col) = (2,5)
 (zpar, zperp) = (0,1)
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
+poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.1), strokewidth=1)
 edgeVectors = μLdual[1].*(zpar.*𝐄Parallel .+ zperp.*𝐄Perp)
-arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
+arrowColours = [(:green, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
 arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2, lengthscale=1.0)
 # arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ[jᵖ.==0]), Vec{2,Float64}.(edgeVectors[jᵖ.==0]), color=arrowColours[jᵖ.==0], linewidth=2, lengthscale=1.0)
 # arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ[jᵖ.!=0]), Vec{2,Float64}.(edgeVectors[jᵖ.!=0]), color=arrowColours[jᵖ.!=0], linewidth=2, lengthscale=1.0)
@@ -117,14 +117,14 @@ cellPolygons = findCellPolygons(R, A, B)
 (row,col) = (3,1)
 (zpar, zperp) = (1,0)
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
+poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.1), strokewidth=1)
 edgeVectors = μLprimal[2].*(zpar.*𝐞Parallel .+ zperp.*𝐞Perp)
 arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
 arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2, lengthscale=1.0)
 (row,col) = (3,2)
 (zpar, zperp) = (0,1)
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
+poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.1), strokewidth=1)
 edgeVectors = μLprimal[2].*(zpar.*𝐞Parallel .+ zperp.*𝐞Perp)
 arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
 arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2, lengthscale=1.0)
@@ -133,30 +133,30 @@ arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), col
 (row,col) = (3,4)
 (zpar, zperp) = (1,0)
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
+poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.1), strokewidth=1)
 edgeVectors = μLdual[1].*(zpar.*𝐄Parallel .+ zperp.*𝐄Perp)
-arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
+arrowColours = [(:green, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
 arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2, lengthscale=1.0)
 (row,col) = (3,5)
 (zpar, zperp) = (0,1)
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
+poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.1), strokewidth=1)
 edgeVectors = μLdual[1].*(zpar.*𝐄Parallel .+ zperp.*𝐄Perp)
-arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
+arrowColours = [(:green, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
 arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2, lengthscale=1.0)
 # First eigenmode 
 # Primal network 
 (row,col) = (4,1)
 (zpar, zperp) = (1,0)
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
+poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.1), strokewidth=1)
 edgeVectors = μLprimal[1].*(zpar.*𝐞Parallel .+ zperp.*𝐞Perp)
 arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
 arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2, lengthscale=1.0)
 (row,col) = (4,2)
 (zpar, zperp) = (0,1)
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
+poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.1), strokewidth=1)
 edgeVectors = μLprimal[1].*(zpar.*𝐞Parallel .+ zperp.*𝐞Perp)
 arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
 arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2, lengthscale=1.0)
@@ -165,29 +165,29 @@ arrows!(axes[end], Point{2,Float64}.(𝐜ⱼ), Vec{2,Float64}.(edgeVectors), col
 (row,col) = (4,4)
 (zpar, zperp) = (1,0)
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
+poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.1), strokewidth=1)
 edgeVectors = μLdual[2].*(zpar.*𝐄Parallel .+ zperp.*𝐄Perp)
-arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
+arrowColours = [(:green, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
 arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2, lengthscale=1.0)
 (row,col) = (4,5)
 (zpar, zperp) = (0,1)
 push!(axes, Axis(fig[row,col], aspect=DataAspect()))
-poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.2), strokewidth=1)
+poly!.(axes[end], cellPolygons, color=(:black,0.1), strokecolor=(:black, 0.1), strokewidth=1)
 edgeVectors = μLdual[2].*(zpar.*𝐄Parallel .+ zperp.*𝐄Perp)
-arrowColours = [(:blue, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
+arrowColours = [(:green, norm(v)/maximum(norm.(edgeVectors))) for v in edgeVectors]
 arrows!(axes[end], Point{2,Float64}.(𝐂ⱼ), Vec{2,Float64}.(edgeVectors), color=arrowColours, linewidth=2, lengthscale=1.0)
 
 push!(axes, Axis(fig[:,3]))
 vlines!(axes[end], [0.0], color=(:black,0.3), linewidth=5, linestyle=:solid)
 
 
-Label(fig[0,1:2], "Primal", fontsize=48)
-Label(fig[0,4:5], "Dual", fontsize=48)
+Label(fig[0,1:2], "Primal", fontsize=36)
+Label(fig[0,4:5], "Dual", fontsize=36)
 
-Label(fig[1,1], L"(1,0)", fontsize=36)
-Label(fig[1,2], L"(0,1)", fontsize=36)
-Label(fig[1,4], L"(1,0)", fontsize=36)
-Label(fig[1,5], L"(0,1)", fontsize=36)
+Label(fig[1,1], L"\{1,0\}", fontsize=36)
+Label(fig[1,2], L"\{0,1\}", fontsize=36)
+Label(fig[1,4], L"\{1,0\}", fontsize=36)
+Label(fig[1,5], L"\{0,1\}", fontsize=36)
 
 Label(fig[1,0], L"\{z^{\parallel(m)}, z^{\perp(m)}\}", fontsize=36)
 Label(fig[2,0], L"m=1", fontsize=36)

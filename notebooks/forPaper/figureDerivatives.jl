@@ -110,14 +110,14 @@ for (col,inputSystem) in enumerate(inputSystems)
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=cocurlᶜh[i],colorrange=cocurlᶜhLims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[1,1,Bottom()], L"\mathrm{cocurl}^c",fontsize=36)
-    Colorbar(gl[1,2], colorrange=cocurlᶜhLims, colormap=:bam, height=Relative(0.8))
+    Label(gl[1,1,Bottom()], L"-\mathrm{cocurl}^c",fontsize=36)
+    Colorbar(gl[1,2], colorrange=cocurlᶜhLims, colormap=:bam, height=Relative(0.7))
     push!(axes, Axis(gl[1,3], aspect=DataAspect()))
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=-divᶜh[i],colorrange=divᶜhLims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
     end
     Label(gl[1,3,Bottom()], L"-\mathrm{div}^c",fontsize=36)
-    Colorbar(gl[1,4], colorrange=divᶜhLims, colormap=:bam, height=Relative(0.8))
+    Colorbar(gl[1,4], colorrange=divᶜhLims, colormap=:bam, height=Relative(0.7))
 
     push!(axes, Axis(gl[2,1], aspect=DataAspect()))
     for k=1:Kⁱ
@@ -127,7 +127,7 @@ for (col,inputSystem) in enumerate(inputSystems)
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
     Label(gl[2,1,Bottom()], L"-\mathrm{div}^v", fontsize=36)
-    Colorbar(gl[2,2],limits=divᵛhLims,colormap=:bam, height=Relative(0.8))
+    Colorbar(gl[2,2],limits=divᵛhLims,colormap=:bam, height=Relative(0.7))
     push!(axes, Axis(gl[2,3], aspect=DataAspect()))
     for k=1:Kⁱ
         poly!(axes[end],linkTriangles[k],color=cocurlᵛh[k],colorrange=cocurlᵛhLims,colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
@@ -135,21 +135,21 @@ for (col,inputSystem) in enumerate(inputSystems)
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[2,3,Bottom()], L"\mathrm{cocurl}^v", fontsize=36)
-    Colorbar(gl[2,4],limits=cocurlᵛhLims,colormap=:bam, height=Relative(0.8))
+    Label(gl[2,3,Bottom()], L"-\mathrm{cocurl}^v", fontsize=36)
+    Colorbar(gl[2,4],limits=cocurlᵛhLims,colormap=:bam, height=Relative(0.7))
 
     push!(axes, Axis(gl[3,1], aspect=DataAspect()))
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=curlᶜh[i],colorrange=curlᶜhLims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[3,1,Bottom()], L"\mathrm{curl}^c",fontsize=36)
-    Colorbar(gl[3,2], colorrange=curlᶜhLims, colormap=:bam, height=Relative(0.8))
+    Label(gl[3,1,Bottom()], L"-\mathrm{curl}^c",fontsize=36)
+    Colorbar(gl[3,2], colorrange=curlᶜhLims, colormap=:bam, height=Relative(0.7))
     push!(axes, Axis(gl[3,3], aspect=DataAspect()))
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=codivᶜh[i],colorrange=codivᶜhLims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
     end
     Label(gl[3,3,Bottom()], L"\mathrm{codiv}^c",fontsize=36)
-    Colorbar(gl[3,4], colorrange=codivᶜhLims, colormap=:bam, height=Relative(0.8))
+    Colorbar(gl[3,4], colorrange=codivᶜhLims, colormap=:bam, height=Relative(0.7))
 
     push!(axes, Axis(gl[4,1], aspect=DataAspect()))
     for k=1:Kⁱ
@@ -159,7 +159,7 @@ for (col,inputSystem) in enumerate(inputSystems)
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
     Label(gl[4,1,Bottom()], L"\mathrm{codiv}^v", fontsize=36)
-    Colorbar(gl[4,2],limits=codivᵛhLims,colormap=:bam, height=Relative(0.8))
+    Colorbar(gl[4,2],limits=codivᵛhLims,colormap=:bam, height=Relative(0.7))
     push!(axes, Axis(gl[4,3], aspect=DataAspect()))
     for k=1:Kⁱ
         poly!(axes[end],linkTriangles[k],color=curlᵛh[k],colorrange=curlᵛhLims,colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
@@ -167,8 +167,8 @@ for (col,inputSystem) in enumerate(inputSystems)
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[4,3,Bottom()], L"\mathrm{curl}^v", fontsize=36)
-    Colorbar(gl[4,4],limits=curlᵛhLims,colormap=:bam, height=Relative(0.8))
+    Label(gl[4,3,Bottom()], L"-\mathrm{curl}^v", fontsize=36)
+    Colorbar(gl[4,4],limits=curlᵛhLims,colormap=:bam, height=Relative(0.7))
 
     Label(gl[0,1], "Primal", fontsize=36)
     Label(gl[0,3], "Dual", fontsize=36)

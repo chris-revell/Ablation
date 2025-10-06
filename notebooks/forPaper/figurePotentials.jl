@@ -136,14 +136,14 @@ for (col,inputSystem) in enumerate(inputSystems)
     for (i, ii) in enumerate(Lfreindexing)
         poly!(axes[end],cellPolygons[ii],color=upar[i],colorrange=uparLims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[1,1,Bottom()], L"u^\parallel", fontsize = 36)
-    Colorbar(gl[1,2],limits=uparLims,colormap=:bam, height=Relative(0.8))
+    Label(gl[1,1,Bottom()], L"-u^\parallel", fontsize = 36)
+    Colorbar(gl[1,2],limits=uparLims,colormap=:bam, height=Relative(0.7))#, ticks=(uparLims[1]:uparLims[2]:uparLims[2]))
     push!(axes, Axis(gl[1,3], aspect=DataAspect()))
     for (i, ii) in enumerate(Lcreindexing)
         poly!(axes[end],cellPolygons[ii],color=ϕCapitalpar[i],colorrange=ϕCapitalparLims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
     end
     Label(gl[1,3,Bottom()], L"\Phi^\parallel", fontsize = 36)
-    Colorbar(gl[1,4],limits=ϕCapitalparLims,colormap=:bam, height=Relative(0.8))
+    Colorbar(gl[1,4],limits=ϕCapitalparLims,colormap=:bam, height=Relative(0.7))#, ticks=(ϕCapitalparLims[1]:ϕCapitalparLims[2]:ϕCapitalparLims[2]))
 
     push!(axes, Axis(gl[2,1], aspect=DataAspect()))
     for (k, kk) in enumerate(Lvreindexing)
@@ -153,7 +153,7 @@ for (col,inputSystem) in enumerate(inputSystems)
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
     Label(gl[2,1,Bottom()], L"\phi^\parallel", fontsize = 36)
-    Colorbar(gl[2,2],limits=ϕparLims,colormap=:bam, height=Relative(0.8))
+    Colorbar(gl[2,2],limits=ϕparLims,colormap=:bam, height=Relative(0.7))#, ticks=(ϕparLims[1]:ϕparLims[2]:ϕparLims[2]))
     push!(axes, Axis(gl[2,3], aspect=DataAspect()))
     for (k, kk) in enumerate(Ltreindexing)
         poly!(axes[end],linkTriangles[kk],color=Upar[k],colorrange=UparLims,colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
@@ -161,21 +161,21 @@ for (col,inputSystem) in enumerate(inputSystems)
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[2,3,Bottom()], L"U^\parallel", fontsize = 36)
-    Colorbar(gl[2,4],limits=UparLims,colormap=:bam, height=Relative(0.8))
+    Label(gl[2,3,Bottom()], L"-U^\parallel", fontsize = 36)
+    Colorbar(gl[2,4],limits=UparLims,colormap=:bam, height=Relative(0.7))#, ticks=(UparLims[1]:UparLims[2]:UparLims[2]))
 
     push!(axes, Axis(gl[3,1], aspect=DataAspect()))
     for (i, ii) in enumerate(Lfreindexing)
         poly!(axes[end],cellPolygons[ii],color=uperp[i],colorrange=uperpLims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[3,1,Bottom()], L"u^\perp", fontsize = 36)
-    Colorbar(gl[3,2],limits=uperpLims,colormap=:bam, height=Relative(0.8))
+    Label(gl[3,1,Bottom()], L"-u^\perp", fontsize = 36)
+    Colorbar(gl[3,2],limits=uperpLims,colormap=:bam, height=Relative(0.7))#, ticks=(uperpLims[1]:uperpLims[2]:uperpLims[2]))
     push!(axes, Axis(gl[3,3], aspect=DataAspect()))
     for (i, ii) in enumerate(Lcreindexing)
         poly!(axes[end],cellPolygons[ii],color=-ϕCapitalperp[i],colorrange=ϕCapitalperpLims,colormap=:bam,strokewidth=1,strokecolor=(:black,0.25))
     end
     Label(gl[3,3,Bottom()], L"-\Phi^\perp", fontsize = 36)
-    Colorbar(gl[3,4],limits=ϕCapitalperpLims,colormap=:bam, height=Relative(0.8))
+    Colorbar(gl[3,4],limits=ϕCapitalperpLims,colormap=:bam, height=Relative(0.7))#, ticks=(ϕCapitalperpLims[1]:ϕCapitalperpLims[2]:ϕCapitalperpLims[2]))
 
     push!(axes, Axis(gl[4,1], aspect=DataAspect()))
     for (k, kk) in enumerate(Lvreindexing)
@@ -185,7 +185,7 @@ for (col,inputSystem) in enumerate(inputSystems)
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
     Label(gl[4,1,Bottom()], L"-\phi^\perp", fontsize = 36)
-    Colorbar(gl[4,2],limits=ϕperpLims, colormap=:bam, height=Relative(0.8))
+    Colorbar(gl[4,2],limits=ϕperpLims, colormap=:bam, height=Relative(0.7))#, ticks=(ϕperpLims[1]:ϕperpLims[2]:ϕperpLims[2]))
     push!(axes, Axis(gl[4,3], aspect=DataAspect()))
     for (k, kk) in enumerate(Ltreindexing)
         poly!(axes[end],linkTriangles[kk],color=Uperp[k],colorrange=UperpLims, colormap=:bam,strokewidth=1,strokecolor=(:white,0.0))
@@ -193,8 +193,8 @@ for (col,inputSystem) in enumerate(inputSystems)
     for i=1:I
         poly!(axes[end],cellPolygons[i],color=(:white,0.0),strokewidth=1,strokecolor=(:black,0.25))
     end
-    Label(gl[4,3,Bottom()], L"U^\perp", fontsize = 36)
-    Colorbar(gl[4,4],limits=UperpLims, colormap=:bam, height=Relative(0.8))
+    Label(gl[4,3,Bottom()], L"-U^\perp", fontsize = 36)
+    Colorbar(gl[4,4],limits=UperpLims, colormap=:bam, height=Relative(0.7))#, ticks=(UperpLims[1]:UperpLims[2]:UperpLims[2]))
     
     Label(gl[0,1], "Primal", fontsize=48)
     Label(gl[0,3], "Dual", fontsize=48)
