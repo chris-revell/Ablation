@@ -62,7 +62,7 @@ else
     F2 = matrices2.F
 
     C = findC(A, B)
-    centralCellVertices = R[findall(x->x!=0, C[centralCell, :])]
+    centralCellVertices = R[findall(x->x!=0, C [centralCell, :])]
     systemCOM2 = sum(centralCellVertices)./length(centralCellVertices)
     
     jldsave(datadir("referenceSystems", inputDir, "$(inputSystem)Ablated_testSystem.jld2"); 

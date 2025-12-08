@@ -226,7 +226,7 @@ colsize!(fig.layout, 2, Relative(0.55))
 
 display(fig)
 
-save(plotsdir(inputDir, "xFieldCellRemoved.png"), fig)
-save(plotsdir(inputDir, "xFieldCellRemoved.pdf"), fig)
+save(plotsdir(inputDir, "Figure9xFieldCellRemoved.png"), fig)
+save(plotsdir(inputDir, "Figure9xFieldCellRemoved.pdf"), fig)
 
 

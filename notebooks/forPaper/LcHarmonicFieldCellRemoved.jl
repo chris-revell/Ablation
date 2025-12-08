@@ -150,5 +150,5 @@ resize_to_layout!(fig)
 
 display(fig)
 
-save(plotsdir(inputDir, "edgeLaplacianHarmonicFieldCellRemoved_$(inputSystem).png"), fig)
-save(plotsdir(inputDir, "edgeLaplacianHarmonicFieldCellRemoved_$(inputSystem).pdf"), fig)
+save(plotsdir(inputDir, "LcFieldCellRemoved_$(inputSystem).png"), fig)
+save(plotsdir(inputDir, "LcFieldCellRemoved_$(inputSystem).pdf"), fig)

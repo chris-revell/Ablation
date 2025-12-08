@@ -23,18 +23,21 @@ inputDir = "quadraticPotentialNoPressure"; isdir(plotsdir(inputDir)) ? nothing :
 fileName = datadir("referenceSystems", inputDir, "$(inputSystem)_testSystem.jld2")
 importedData = load(fileName)
 @unpack R, A, B, F = importedData
-
+𝐡 = hNetwork(R, A, B, F)
+cocurlᶜh = cocurlᶜ(R, A, B, 𝐡)
+C = findC(A, B)
+i_min = findmin(cocurlᶜh)[2]
+i_max = findmax(cocurlᶜh)[2]
+ablatedCellVertices2 = R[findall(x->x!=0, C[i_min, :])]
+ablationCentre2 = sum(ablatedCellVertices2)./length(ablatedCellVertices2)
+ablatedCellVertices3 = R[findall(x->x!=0, C[i_min, :])]
+ablationCentre3 = sum(ablatedCellVertices3)./length(ablatedCellVertices3)
 
 if isfile(datadir("referenceSystems", inputDir, "$(inputSystem)Ablated2_testSystem.jld2"))
     inFile = datadir("referenceSystems", inputDir, "$(inputSystem)Ablated2_testSystem.jld2")
     importedData = load(inFile)
     @unpack R2, A2, B2, F2, R3, A3, B3, F3 = importedData
 else
-    𝐡 = hNetwork(R, A, B, F)
-    cocurlᶜh = cocurlᶜ(R, A, B, 𝐡)
-    C = findC(A, B)
-    i_min = findmin(cocurlᶜh)[2]
-    i_max = findmax(cocurlᶜh)[2]
     Rtmp, Atmp, Btmp = ablateCells(R, A, B, [i_min])
     integ2 = vertexModel(abstol = 1e-9,
                         reltol = 1e-9,
@@ -159,7 +162,7 @@ Label(fig[1,2,Bottom()], popfirst!(subfigureLabels), fontsize=24)
 
 display(fig)
 
-save(plotsdir(inputDir, "displacementCellRemovedByStress$(inputSystem).png"), fig)
-save(plotsdir(inputDir, "displacementCellRemovedByStress$(inputSystem).pdf"), fig)
+# save(plotsdir(inputDir, "displacementCellRemovedByStress$(inputSystem).png"), fig)
+# save(plotsdir(inputDir, "displacementCellRemovedByStress$(inputSystem).pdf"), fig)
 
 

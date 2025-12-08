@@ -11,11 +11,16 @@ JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
 LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 NonlinearSolve = "8913a72c-1f9b-4ce2-8d82-65094dcecaec"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 SteadyStateDiffEq = "9672c7b4-1e72-59bd-8a11-6ac3964bc41f"
 Sundials = "c3572dad-4567-51f8-b174-8c6c989267f4"
 UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 VertexModel = "514bac63-329a-430c-b146-740bf51d96fc"
+
+[sources]
+DiscreteCalculus = {path = "/Users/christopher/Postdoc/Code/DiscreteCalculus"}
+VertexModel = {rev = "ablation", url = "../VertexModel"}
 
 [compat]
 DrWatson = "2.18.0"

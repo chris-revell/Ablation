@@ -111,7 +111,7 @@ for (col,inputSystem) in enumerate(inputSystems)
     for i=1:I 
         poly!(axes[end], cellPolygons2[i], color=(:black, 0.2), strokewidth=1, strokecolor=(:black,0.2))
     end
-    arrows!(axes[end], Point{2,Float64}.(cellCentres2), Vec{2,Float64}.(Δrᵢ), color=directions, colormap=:bam, colorrange=clims, lengthscale=1.0, align=:head)
+    arrows2d!(axes[end], Point{2,Float64}.(cellCentres2), Vec{2,Float64}.(Δrᵢ), color=directions, colormap=:bam, colorrange=clims)#, lengthscale=1.0, align=:head)
     hidedecorations!(axes[end])
     hidespines!(axes[end])
     Label(fig[1,col,Bottom()], popfirst!(subfigureLabels), fontsize=24) 
@@ -254,7 +254,7 @@ end
 
 display(fig)
 
-save(plotsdir(inputDir, "displacement.png"), fig)
-save(plotsdir(inputDir, "displacement.pdf"), fig)
+# save(plotsdir(inputDir, "displacement.png"), fig)
+# save(plotsdir(inputDir, "displacement.pdf"), fig)
 
 
