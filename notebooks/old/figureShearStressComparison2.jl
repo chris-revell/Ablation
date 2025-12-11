@@ -62,7 +62,7 @@ else
     F2 = matrices2.F
 
     C = findC(A, B)
-    centralCellVertices = R[findall(x->x!=0, C [centralCell, :])]
+    centralCellVertices = R[findall(x->x!=0, C[centralCell, :])]
     systemCOM2 = sum(centralCellVertices)./length(centralCellVertices)
     
     jldsave(datadir("referenceSystems", inputDir, "$(inputSystem)Ablated_testSystem.jld2"); 
@@ -222,7 +222,8 @@ end
 # arrowColours = [(:green, 0.2+0.8*norm(Δrᵢ[i])/maximum(norm.(Δrᵢ))) for i=1:I]
 # arrowColours = [(:green, norm(Δrᵢ[i])/maximum(norm.(Δrᵢ))) for i=1:I]
 # arrowColours = [(:green, 1.0) for i=1:I]
-arrows!(axes[end], Point{2,Float64}.(cellCentres2), Vec{2,Float64}.(Δrᵢ), color=directions, colormap=:bam, colorrange=clims, lengthscale=20.0, align=:head)
+# arrows!(axes[end], Point{2,Float64}.(cellCentres2), Vec{2,Float64}.(Δrᵢ), color=directions, colormap=:bam, colorrange=clims, lengthscale=20.0, align=:head)
+arrows!(axes[end], Point{2,Float64}.(cellCentres2), Vec{2,Float64}.(Δrᵢ), color=directions, colormap=:bam, colorrange=clims)#, lengthscale=20.0, align=:head)
 hidedecorations!(axes[end])
 hidespines!(axes[end])
 Label(fig[6,1], popfirst!(subfigureLabels), fontsize=24) 
