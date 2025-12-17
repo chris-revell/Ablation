@@ -18,7 +18,10 @@ using Dates
 @from "$(srcdir("Stresses.jl"))" using Stresses
 @from "$(srcdir("DivideCell.jl"))" using DivideCell
 
-deNovoSystem = false
+deNovoSystem = true
+
+γ_in = 0.2
+L₀_in = 2.0
 
 if deNovoSystem
     integ0 = vertexModel(
@@ -32,6 +35,8 @@ if deNovoSystem
         printToggle = 1,
         plotCells = 0,
         energyModel = "quadratic",
+        γ = γ_in,
+        L₀ = L₀_in,
     )
 
     #%%

@@ -17,11 +17,12 @@ using Printf
 @from "$(srcdir("AblateCells.jl"))" using AblateCells
 @from "$(srcdir("Stresses.jl"))" using Stresses
 
-dateString = "25-12-11-09-28-09"
+# dateString = "25-12-11-09-28-09"
+dateString = "25-12-15-13-10-46"
 
-fig = Figure(size=(2000,1000), fontsize=12)
+fig = Figure(size=(2000,2000), fontsize=12)
 axes = Axis[]
-individualLetters = string.(Char.(UInt8.(collect(97:97+26-1+30))))
+individualLetters = string.(Char.(UInt8.(collect(97:97+26-1))))
 subfigureLabels = [L"(%$l)" for l in individualLetters]
 
 # Import system data
@@ -49,8 +50,13 @@ cellCentres = findCellCentresOfMass(R1, matrices1.A, matrices1.B)
 ζᵢ = [sqrt(-det(σDSᵢ[i])) for i=1:size(matrices1.B,1)]
 p_eff = -0.5.*cocurlᶜ(R1, matrices1.A, matrices1.B, 𝐡)
 
+cellOrder = sortperm(p_eff[testCells])
+orderedCells = testCells[cellOrder]
 
-for cell in testCells
+maxPanels = 25
+nPanels = min(maxPanels,length(testCells))
+
+for cell in orderedCells[1:nPanels]
 
     importedDataAblated = load(datadir("displacementFields", dateString, "$(dateString)_Ablated$(cell).jld2"))
     @unpack Rablated, Aablated, Bablated, Fablated, ablationCOM = importedDataAblated
@@ -96,23 +102,36 @@ end
 hidedecorations!.(axes)
 hidespines!.(axes)
 
-orderAxes = sortperm(p_eff[testCells])
-
 #%%
 
-nCols = 4 
-for n=1:length(testCells)
-    gl = GridLayout(fig[fld1(n,nCols), mod1(n,nCols)])
-    gl[1,1] = axes[2*orderAxes[n]-1]
-    gl[1,2] = axes[2*orderAxes[n]]
-    Label(gl[1,1:2,Bottom()], subfigureLabels[n], fontsize=24) 
+nCols = 5 
+# for (ind, val) in enumerate(orderAxes[1:min(26,length(testCells))])
+#     gl = GridLayout(fig[fld1(ind,nCols), mod1(ind,nCols)])
+#     gl[1,1] = axes[2*val-1]
+#     gl[1,2] = axes[2*val]
+#     Label(gl[1,1:2,Bottom()], subfigureLabels[ind], fontsize=24) 
+#     Box(gl[1,1:2], color = (:white, 0.0), strokecolor=:black, cornerradius=20)
+#     colsize!(gl, 1, Relative(0.5))
+#     colsize!(gl, 2, Relative(0.5))
+#     # rowsize!(gl, 1, Relative(1.0))
+# end
+for ind=1:nPanels
+    gl = GridLayout(fig[fld1(ind,nCols), mod1(ind,nCols)])
+    gl[1,1] = axes[2*ind-1]
+    gl[1,2] = axes[2*ind]
+    Label(gl[1,1:2,Bottom()], subfigureLabels[ind], fontsize=24) 
     Box(gl[1,1:2], color = (:white, 0.0), strokecolor=:black, cornerradius=20)
     colsize!(gl, 1, Relative(0.5))
     colsize!(gl, 2, Relative(0.5))
     # rowsize!(gl, 1, Relative(1.0))
 end
+
 for col=1:nCols
     colsize!(fig.layout, col, Relative(1.0/nCols))
+end
+nRows = fld1(nPanels, nCols)
+for row=1:nRows
+    rowsize!(fig.layout, row, Aspect(1, 0.55 ))
 end
 resize_to_layout!(fig)
 display(fig)
