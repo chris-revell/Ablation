@@ -276,5 +276,5 @@ resize_to_layout!(fig)
 
 display(fig)
 
-save(plotsdir(inputDir, "Figure10AblationStressComparison.png"), fig)
-save(plotsdir(inputDir, "Figure10AblationStressComparison.pdf"), fig)
+save(plotsdir(inputDir, "Figure11AblationStressComparison.png"), fig)
+save(plotsdir(inputDir, "Figure11AblationStressComparison.pdf"), fig)

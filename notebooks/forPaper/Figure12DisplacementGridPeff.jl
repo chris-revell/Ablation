@@ -129,8 +129,8 @@ resize_to_layout!(fig)
 
 display(fig)
 
-save(plotsdir(inputDir, "Figure11DisplacementGrid.png"), fig)
-save(plotsdir(inputDir, "Figure11DisplacementGrid.pdf"), fig)
+save(plotsdir(inputDir, "Figure12DisplacementGrid.png"), fig)
+save(plotsdir(inputDir, "Figure12DisplacementGrid.pdf"), fig)
 
 
 # rowsize!(gl, 1, Relative(0.32))

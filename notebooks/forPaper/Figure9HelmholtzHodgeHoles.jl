@@ -174,5 +174,5 @@ colsize!(fig.layout, 6, Relative(0.31))
 resize_to_layout!(fig)
 
 display(fig)
-save(plotsdir(inputDir, "Figure8HelmholtzHodgeHoles.png"), fig)
-save(plotsdir(inputDir, "Figure8HelmholtzHodgeHoles.pdf"), fig)
+save(plotsdir(inputDir, "Figure9HelmholtzHodgeHoles.png"), fig)
+save(plotsdir(inputDir, "Figure9HelmholtzHodgeHoles.pdf"), fig)

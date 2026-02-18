@@ -272,5 +272,5 @@ resize_to_layout!(fig)
 
 display(fig)
 
-save(plotsdir(inputDir, "figure11DisplacementGridShear.png"), fig)
-save(plotsdir(inputDir, "figure11DisplacementGridShear.pdf"), fig)
+save(plotsdir(inputDir, "figure12DisplacementGridShear.png"), fig)
+save(plotsdir(inputDir, "figure12DisplacementGridShear.pdf"), fig)
