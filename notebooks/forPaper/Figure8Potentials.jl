@@ -29,25 +29,15 @@ individualLetters = string.(Char.(UInt8.(collect(97:97+26-1))))
 subfigureLabels = [L"(%$l)" for l in individualLetters]
 
 gl0 = GridLayout(fig[1,1])
-# Box(gl0[1,2])
-# Box(gl0[1,3])
-# Box(gl0[1,4])
-# Box(gl0[1,5])
-# Box(gl0[1,6])
-# Box(gl0[1,7])
-# Box(gl0[1,8])
-# Box(gl0[1,9])
 Label(gl0[:,1], "", fontsize=36, rotation=π/2)
-# Label(gl0[1,2:5], "Divergences", fontsize=36) #, rotation=π/2)
-# Label(gl0[1,6:9], "Curls", fontsize=36) #, rotation=π/2)
-Label(gl0[1,2], "Cells", fontsize=36) #, rotation=π/2)
-Label(gl0[1,3], "", fontsize=36) #, rotation=π/2)
-Label(gl0[1,4], "Vertices", fontsize=36) #, rotation=π/2)
-Label(gl0[1,5], "", fontsize=36) #, rotation=π/2)
-Label(gl0[1,6], "Cells", fontsize=36) #, rotation=π/2)
-Label(gl0[1,7], "", fontsize=36) #, rotation=π/2)
-Label(gl0[1,8], "Vertices", fontsize=36) #, rotation=π/2)
-Label(gl0[1,9], "", fontsize=36) #, rotation=π/2)
+Label(gl0[1,2], "Cells", fontsize=36)
+Label(gl0[1,3], "", fontsize=36)
+Label(gl0[1,4], "Vertices", fontsize=36)
+Label(gl0[1,5], "", fontsize=36)
+Label(gl0[1,6], "Cells", fontsize=36)
+Label(gl0[1,7], "", fontsize=36)
+Label(gl0[1,8], "Vertices", fontsize=36)
+Label(gl0[1,9], "", fontsize=36)
 
 colsize!(gl0, 1, Relative(0.04))
 colsize!(gl0, 2, Relative(0.24*0.8))
@@ -79,7 +69,6 @@ for (col,inputSystem) in enumerate(inputSystems)
     linkTriangleAreas = findCellLinkTriangleAreas(R, A, B)
     cellPolygons = findCellPolygons(R, A, B)
     𝐡 = hNetwork(R, A, B, F)
-    # 𝐡 = [SVector{2,Float64}(1.0,0.0) for _=1:J]
 
     curlᶜh = curlᶜ(R, A, B, 𝐡)   
     curlᵛh = curlᵛspokes(R, A, B, 𝐡)   
@@ -145,15 +134,6 @@ for (col,inputSystem) in enumerate(inputSystems)
     UperpMax = max(maximum(abs.(Uperp)), 0.0001)
     UperpLims = (-UperpMax, UperpMax)
 
-    # row1Max = maximum([ϕCapitalparMax,uparMax])
-    # row1Lims = (-row1Max, row1Max)
-    # row2Max = maximum([UparMax, ϕparMax])
-    # row2Lims = (-row2Max, row2Max)
-    # row3Max = max(uperpMax, ϕCapitalperpMax)
-    # row3Lims = (-row3Max, row3Max)
-    # row4Max = max(ϕperpMax, UperpMax)
-    # row4Lims = (-row4Max, row4Max)
-
     gl = GridLayout(fig[2*col, 1])
     glLocals = []
     panel = [0]
@@ -166,7 +146,7 @@ for (col,inputSystem) in enumerate(inputSystems)
             cellPolygons[ii],
             color=upar[i],
             colorrange=uparLims,
-            colormap=:broc,
+            colormap=:bam,
             strokewidth=1,
             strokecolor=(:black,0.25)
         )
@@ -174,7 +154,7 @@ for (col,inputSystem) in enumerate(inputSystems)
     Label(glLocals[end][1,1,Bottom()], L"-u^\parallel", fontsize = 36)
     Colorbar(glLocals[end][1,2],
         limits=uparLims,
-        colormap=:broc,
+        colormap=:bam,
         height=Relative(0.8),
         ticks=([uparLims[1],0.0,uparLims[2]], [numToString(uparLims[1]),"0.0",numToString(uparLims[2])]),
         ticklabelsize=18,
@@ -189,7 +169,7 @@ for (col,inputSystem) in enumerate(inputSystems)
             linkTriangles[kk],
             color=ϕpar[k],
             colorrange=ϕparLims,
-            colormap=:broc,
+            colormap=:bam,
             strokewidth=1,
             strokecolor=(:white,0.0)
         )
@@ -205,7 +185,7 @@ for (col,inputSystem) in enumerate(inputSystems)
     Label(glLocals[end][1,1,Bottom()], L"\phi^\parallel", fontsize = 36)
     Colorbar(glLocals[end][1,2],
         limits=ϕparLims,
-        colormap=:broc,
+        colormap=:bam,
         height=Relative(0.8),
         ticks=([ϕparLims[1],0.0,ϕparLims[2]], [numToString(ϕparLims[1]),"0.0",numToString(ϕparLims[2])]), 
         ticklabelsize=18, 
@@ -220,7 +200,7 @@ for (col,inputSystem) in enumerate(inputSystems)
             cellPolygons[ii],
             color=uperp[i],
             colorrange=uperpLims,
-            colormap=:broc,
+            colormap=:bam,
             strokewidth=1,
             strokecolor=(:black,0.25)
         )
@@ -228,7 +208,7 @@ for (col,inputSystem) in enumerate(inputSystems)
     Label(glLocals[end][1,1,Bottom()], L"-u^\perp", fontsize = 36)
     Colorbar(glLocals[end][1,2],
         limits=uperpLims,
-        colormap=:broc, 
+        colormap=:bam, 
         height=Relative(0.8), 
         ticks=([uperpLims[1],0.0,uperpLims[2]], [numToString(uperpLims[1]),"0.0",numToString(uperpLims[2])]),
         ticklabelsize=18,
@@ -243,7 +223,7 @@ for (col,inputSystem) in enumerate(inputSystems)
             linkTriangles[kk],
             color=-ϕperp[k],
             colorrange=ϕperpLims, 
-            colormap=:broc,
+            colormap=:bam,
             strokewidth=1,
             strokecolor=(:white,0.0)
         )
@@ -259,7 +239,7 @@ for (col,inputSystem) in enumerate(inputSystems)
     Label(glLocals[end][1,1,Bottom()], L"-\phi^\perp", fontsize = 36)
     Colorbar(glLocals[end][1,2],
         limits=ϕperpLims,
-        colormap=:broc,
+        colormap=:bam,
         height=Relative(0.8),
         ticks=([ϕperpLims[1],0.0,ϕperpLims[2]], [numToString(ϕperpLims[1]),"0.0",numToString(ϕperpLims[2])]),
         ticklabelsize=18,
@@ -274,7 +254,7 @@ for (col,inputSystem) in enumerate(inputSystems)
             cellPolygons[ii],
             color=ϕCapitalpar[i],
             colorrange=ϕCapitalparLims,
-            colormap=:broc,
+            colormap=:bam,
             strokewidth=1,
             strokecolor=(:black,0.25)
         )
@@ -282,7 +262,7 @@ for (col,inputSystem) in enumerate(inputSystems)
     Label(glLocals[end][1,1,Bottom()], L"\Phi^\parallel", fontsize = 36)
     Colorbar(glLocals[end][1,2],
         limits=ϕCapitalparLims,
-        colormap=:broc,
+        colormap=:bam,
         height=Relative(0.8),
         ticks=([ϕCapitalparLims[1],0.0,ϕCapitalparLims[2]], [numToString(ϕCapitalparLims[1]),"0.0",numToString(ϕCapitalparLims[2])]), 
         ticklabelsize=18,
@@ -297,7 +277,7 @@ for (col,inputSystem) in enumerate(inputSystems)
             linkTriangles[kk],
             color=Upar[k],
             colorrange=UparLims,
-            colormap=:broc,
+            colormap=:bam,
             strokewidth=1,
             strokecolor=(:white,0.0)
         )
@@ -313,7 +293,7 @@ for (col,inputSystem) in enumerate(inputSystems)
     Label(glLocals[end][1,1,Bottom()], L"-U^\parallel", fontsize = 36)
     Colorbar(glLocals[end][1,2],
         limits=UparLims,
-        colormap=:broc, 
+        colormap=:bam, 
         height=Relative(0.8), 
         ticks=([UparLims[1],0.0,UparLims[2]], [numToString(UparLims[1]),"0.0",numToString(UparLims[2])]), 
         ticklabelsize=18, 
@@ -328,7 +308,7 @@ for (col,inputSystem) in enumerate(inputSystems)
             cellPolygons[ii],
             color=-ϕCapitalperp[i],
             colorrange=ϕCapitalperpLims,
-            colormap=:broc,
+            colormap=:bam,
             strokewidth=1,
             strokecolor=(:black,0.25)
         )
@@ -336,7 +316,7 @@ for (col,inputSystem) in enumerate(inputSystems)
     Label(glLocals[end][1,1,Bottom()], L"-\Phi^\perp", fontsize = 36)
     Colorbar(glLocals[end][1,2],
         limits=ϕCapitalperpLims,
-        colormap=:broc,
+        colormap=:bam,
         height=Relative(0.8),
         ticks=([ϕCapitalperpLims[1],0.0,ϕCapitalperpLims[2]], [numToString(ϕCapitalperpLims[1]),"0.0",numToString(ϕCapitalperpLims[2])]),
         ticklabelsize=18,
@@ -351,7 +331,7 @@ for (col,inputSystem) in enumerate(inputSystems)
             linkTriangles[kk],
             color=Uperp[k],
             colorrange=UperpLims,
-            colormap=:broc,
+            colormap=:bam,
             strokewidth=1,
             strokecolor=(:white,0.0)
         )
@@ -367,7 +347,7 @@ for (col,inputSystem) in enumerate(inputSystems)
     Label(glLocals[end][1,1,Bottom()], L"-U^\perp", fontsize = 36)
     Colorbar(glLocals[end][1,2],
         limits=UperpLims,
-        colormap=:broc, 
+        colormap=:bam, 
         height=Relative(0.8), 
         ticks=([UperpLims[1],0.0,UperpLims[2]], [numToString(UperpLims[1]),"0.0",numToString(UperpLims[2])]), 
         ticklabelsize=18, 
@@ -417,5 +397,5 @@ resize_to_layout!(fig)
 hidedecorations!.(axes)
 hidespines!.(axes)
 display(fig)
-save(plotsdir(inputDir, "Figure8Derivatives.png"), fig)
-save(plotsdir(inputDir, "Figure8Derivatives.pdf"), fig)
+save(plotsdir(inputDir, "Figure8Potentials.png"), fig)
+save(plotsdir(inputDir, "Figure8Potentials.pdf"), fig)

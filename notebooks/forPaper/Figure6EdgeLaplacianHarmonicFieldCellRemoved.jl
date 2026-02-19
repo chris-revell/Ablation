@@ -125,7 +125,7 @@ xlims!(axes[end], (minimum(log10.(radii)),maximum(log10.(radii))))
 axes[end].xlabel = L"\log_{10}\left(c_j\right)"
 axes[end].ylabel = L"\log_{10}\left(\chi_j\right)"
 Label(fig[2,3], popfirst!(subfigureLabels), fontsize=24)
-Colorbar(fig[1,4], colorrange=(0.0,1.0), colormap=:batlow, height=Relative(0.8), label=L"|cos\left(\theta_j\right)|")
+Colorbar(fig[1,4], colorrange=(0.0,1.0), colormap=:batlow, height=Relative(0.8), label=L"|\cos\left(\theta_j\right)|")
 
 rowsize!(fig.layout, 1, Relative(0.99))
 rowsize!(fig.layout, 2, Relative(0.01))
