@@ -20,6 +20,8 @@ end
 getRandomColor(seed) = RGB(rand(Xoshiro(seed),3)...)
 
 pExt = [0.5, 0.0]
+centralCells = [5, 5]
+highlightedEdges = [35, 586]
 
 fig = Figure(size=(1500, 1000), fontsize=24)
 axes = Axis[]
@@ -127,9 +129,8 @@ for row = 1:2
             -1.0 0.0
         ])
 
-    centralCell = 5
     cellNeighbourMatrix = B*transpose(B)
-    centralNeighbours = findall(x->x!=0, cellNeighbourMatrix[5,:])
+    centralNeighbours = findall(x->x!=0, cellNeighbourMatrix[centralCells[row],:])
     neighbours = []
     for n in centralNeighbours
         localNeighbours = findall(x->x!=0, cellNeighbourMatrix[n,:])
@@ -156,7 +157,8 @@ for row = 1:2
             )
         end
     end
-    # scatter!(axes[end], Point{2,Float64}.(cellPositions), color=:black)
+    scatter!(axes[end], Point{2,Float64}.(cellPositions), color=:black)
+    annotation!(axes[end], Point{2,Float64}.(cellPositions), text = string.(collect(1:I)), fontsize=12)
     Label(gl[1,1, Bottom()], popfirst!(subfigureLabels))
 
     push!(axes, Axis(gl[1,2], aspect=DataAspect()))
@@ -175,14 +177,10 @@ for row = 1:2
                 linewidth=4,
             )
             scatter!(axes[end], Point{2,Float64}.(𝐜ⱼ[cellEdgeOrders[i]]), color=:black)
-            # annotation!(axes[end], Point{2,Float64}.(𝐜ⱼ[cellEdgeOrders[i]]), text = string.(cellEdgeOrders[i]), fontsize=12)
+            annotation!(axes[end], Point{2,Float64}.(𝐜ⱼ[cellEdgeOrders[i]]), text = string.(cellEdgeOrders[i]), fontsize=12)
         end
     end
-    if row == 1
-        annotation!(axes[end], Point{2,Float64}(𝐜ⱼ[35].+[15.0,15.0]), Point{2,Float64}(𝐜ⱼ[35]), text = L"\mathbf{c}_j", fontsize=36)
-    elseif row == 2
-        annotation!(axes[end], Point{2,Float64}(𝐜ⱼ[586].+[15.0,15.0]), Point{2,Float64}(𝐜ⱼ[586]), text = L"\mathbf{c}_j", fontsize=36)
-    end 
+    annotation!(axes[end], Point{2,Float64}(𝐜ⱼ[highlightedEdges[row]].+[15.0,15.0]), Point{2,Float64}(𝐜ⱼ[highlightedEdges[row]]), text = L"\mathbf{c}_j", fontsize=36)
     Label(gl[1,2, Bottom()], popfirst!(subfigureLabels))
 
 
@@ -193,11 +191,7 @@ for row = 1:2
         rotatedForces = [ϵ*F[k, i] for k in cellVertexOrders[i][0:end-1]]
         arrows2d!(axes[end], Point{2,Float64}.(𝐡[cellEdgeOrders[i]]), Vec{2,Float64}.(rotatedForces), color=getRandomColor(i), align=:tip)
     end
-    if row == 1
-        annotation!(axes[end], Point{2,Float64}(𝐡[35].+[15.0,15.0]), Point{2,Float64}(𝐡[35]), text = L"\mathbf{h}_j", fontsize=36)
-    elseif row == 2
-        annotation!(axes[end], Point{2,Float64}(𝐡[586].+[15.0,15.0]), Point{2,Float64}(𝐡[586]), text = L"\mathbf{h}_j", fontsize=36)
-    end 
+    annotation!(axes[end], Point{2,Float64}(𝐡[highlightedEdges[row]].+[15.0,15.0]), Point{2,Float64}(𝐡[highlightedEdges[row]]), text = L"\mathbf{h}_j", fontsize=36)
 end
 
 
