@@ -181,7 +181,7 @@ for row = 1:2
     if row == 1
         annotation!(axes[end], Point{2,Float64}(𝐜ⱼ[35].+[15.0,15.0]), Point{2,Float64}(𝐜ⱼ[35]), text = L"\mathbf{c}_j", fontsize=36)
     elseif row == 2
-        annotation!(axes[end], Point{2,Float64}(𝐜ⱼ[586].+[15.0,15.0]), Point{2,Float64}(𝐜ⱼ[586]), text = L"\mathbf{h}_j", fontsize=36)
+        annotation!(axes[end], Point{2,Float64}(𝐜ⱼ[586].+[15.0,15.0]), Point{2,Float64}(𝐜ⱼ[586]), text = L"\mathbf{c}_j", fontsize=36)
     end 
     Label(gl[1,2, Bottom()], popfirst!(subfigureLabels))
 
