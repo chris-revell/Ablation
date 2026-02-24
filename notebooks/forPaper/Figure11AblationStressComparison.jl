@@ -127,150 +127,214 @@ printstyled("Validate ∑aᵢtr(σᵢ)=0\n", color= (sum(aᵢ1.*tr.(σᵢ1))<0.0
 ζᵢ1lims = (minimum(log10.(ζᵢ1)), maximum(log10.(ζᵢ1)))
 ζᵢ2lims = (minimum(log10.(ζᵢ2)), maximum(log10.(ζᵢ2)))
 
-
-#%%
-
 Δζ = abs.(ζᵢ2.-ζᵢ1[Not(ablatedCells)])
 ΔζLims = (log10(minimum(Δζ)), log10(maximum(Δζ)))
 ΔpEff = abs.(pEff2.-pEff1[Not(ablatedCells)])
 ΔpEffLims = (log10(minimum(ΔpEff)), log10(maximum(ΔpEff)))
 clims = (log10(min(minimum(Δζ), minimum(ΔpEff))), log10(max(maximum(Δζ), maximum(ΔpEff))))
 
-fig = Figure(size=(1500,800), fontsize=24)
+
+#%%
+
+fig = Figure(size=(1200,800), fontsize=24)
 axes = Axis[]
 individualLetters = string.(Char.(UInt8.(collect(97:97+26-1))))
 subfigureLabels = [L"(%$l)" for l in individualLetters]
 
-gl1 = GridLayout(fig[1,1])
-push!(axes, Axis(gl1[1,1], aspect=DataAspect()))
+glCol1 = GridLayout(fig[1,1])
+glCol1a = GridLayout(glCol1[1,1])
+push!(axes, Axis(glCol1a[1,1], aspect=DataAspect()))
 hidedecorations!(axes[end])
 hidespines!(axes[end])
 for i=1:size(B2,1)
-    poly!(axes[end], cellPolygons2[i], color=log10(Δζ[i]), colorrange = clims, colormap = :bam, strokecolor=(:black, 0.2), strokewidth=0.5)
+    poly!(axes[end],
+        cellPolygons2[i],
+        color=log10(Δζ[i]),
+        colorrange = clims,
+        colormap = :bam,
+        strokecolor=(:black, 0.2),
+        strokewidth=0.5
+    )
 end
-Colorbar(gl1[1,2], colorrange=clims, colormap=:bam, height=Relative(0.6), label=L"\log_{10}\left(|\Delta\zeta_i|\right)")
-Label(gl1[2,1:2], popfirst!(subfigureLabels), fontsize=24) 
-colsize!(gl1, 1, Relative(0.9))
-colsize!(gl1, 2, Relative(0.1))
-rowsize!(gl1, 1, Relative(0.95))
-rowsize!(gl1, 2, Relative(0.05))
-
-gl1b = GridLayout(fig[2,1])
-push!(axes, Axis(gl1b[1,1]))#, aspect=AxisAspect(1.25)))
-scatter!(axes[end], log10.(Rᵢ2[Not(iᵖ2)]), log10.(abs.(Δζ[Not(iᵖ2)])), color=(:blue, 0.25))
-scatter!(axes[end], log10.(Rᵢ2[iᵖ2]), log10.(abs.(Δζ[iᵖ2])), color=(:red, 0.25))
-# lines!(axes[end], log10.(Rᵢ2dummy), log10.(0.015*1.0./Rᵢ2dummy), color=(:black, 0.75), linestyle=:dash)
-lines!(axes[end], log10.(Rᵢ2dummy), log10.(0.016*1.0./Rᵢ2dummy.^2), color=(:black, 0.75), linestyle=:dash)
+cb1a = Colorbar(glCol1a[1,2],
+    colorrange=clims,
+    colormap=:bam,
+    height=Relative(0.8),
+    label=L"\log_{10}\left(|\Delta\zeta_i|\right)"
+)
+cb1a.alignmode = Mixed(right = 0)
+Label(glCol1[2,1], popfirst!(subfigureLabels), fontsize=24) 
+push!(axes, Axis(glCol1[3,1]))
+scatter!(axes[end],
+    log10.(Rᵢ2[Not(iᵖ2)]),
+    log10.(abs.(Δζ[Not(iᵖ2)])),
+    color=(:blue, 0.25)
+)
+scatter!(axes[end],
+    log10.(Rᵢ2[iᵖ2]),
+    log10.(abs.(Δζ[iᵖ2])),
+    color=(:red, 0.25)
+)
+lines!(axes[end],
+    log10.(Rᵢ2dummy),
+    log10.(0.016*1.0./Rᵢ2dummy.^2),
+    color=(:black, 0.75),
+    linestyle=:dash
+)
 axes[end].ylabel = L"\log_{10}\left(|\Delta\zeta_i|\right)"
 axes[end].xlabel = L"\log_{10}\left(R_i\right)"
+axes[end].alignmode = Mixed(left=0)
 ylims!(axes[end], clims)
 xlims!(axes[end], (-0.6, 1.0))
 axes[end].xticks = (-0.6:0.6:0.6, string.(-0.6:0.6:0.6))
-Label(gl1b[2,1], popfirst!(subfigureLabels), fontsize=24) 
-colsize!(gl1b, 1, Relative(1.0))
-rowsize!(gl1b, 1, Relative(0.99))
-rowsize!(gl1b, 2, Relative(0.01))
+Label(glCol1[4,1], popfirst!(subfigureLabels), fontsize=24) 
 
-gl2 = GridLayout(fig[1,2])
-push!(axes, Axis(gl2[1,1], aspect=DataAspect()))
+colsize!(glCol1a, 1, Relative(0.8))
+colsize!(glCol1a, 2, Relative(0.2))
+rowsize!(glCol1a, 1, Relative(1.0))
+colsize!(glCol1, 1, Relative(1.0))
+rowsize!(glCol1, 1, Relative(0.5))
+rowsize!(glCol1, 2, Relative(0.05))
+rowsize!(glCol1, 3, Relative(0.4))
+rowsize!(glCol1, 4, Relative(0.05))
+
+
+
+
+glCol2 = GridLayout(fig[1,2])
+glCol2a = GridLayout(glCol2[1,1])
+push!(axes, Axis(glCol2a[1,1], aspect=DataAspect()))
 hidedecorations!(axes[end])
 hidespines!(axes[end])
 for i=1:size(B2,1)
-    poly!(axes[end], cellPolygons2[i], color=log10(ΔpEff[i]), colorrange = clims, colormap = :bam, strokecolor=(:black, 0.2), strokewidth=0.5)
+    poly!(axes[end],
+        cellPolygons2[i],
+        color=log10(ΔpEff[i]),
+        colorrange = clims,
+        colormap = :bam,
+        strokecolor=(:black, 0.2),
+        strokewidth=0.5
+    )
 end
-Colorbar(gl2[1,2], colorrange=clims, colormap=:bam, height=Relative(0.6), label=L"\log_{10}\left(|\Delta P_{eff}|\right)")
-Label(gl2[2,1:2], popfirst!(subfigureLabels), fontsize=24) 
-colsize!(gl2, 1, Relative(0.9))
-colsize!(gl2, 2, Relative(0.1))
-rowsize!(gl2, 1, Relative(0.95))
-rowsize!(gl2, 2, Relative(0.05))
-
-gl2b = GridLayout(fig[2,2])
-push!(axes, Axis(gl2b[1,1]))#, aspect=AxisAspect(1.25)))
-scatter!(axes[end], log10.(Rᵢ2[Not(iᵖ2)]), log10.(abs.(ΔpEff[Not(iᵖ2)])), color=(:blue, 0.25))
-scatter!(axes[end], log10.(Rᵢ2[iᵖ2]), log10.(abs.(ΔpEff[iᵖ2])), color=(:red, 0.25))
-# lines!(axes[end], log10.(Rᵢ2dummy), log10.(0.005*1.0./Rᵢ2dummy), color=(:black, 0.75), linestyle=:dash)
-lines!(axes[end], log10.(Rᵢ2dummy), log10.(0.008*1.0./(Rᵢ2dummy).^2), color=(:black, 0.75), linestyle=:dash)
+cb2a = Colorbar(glCol2a[1,2],
+    colorrange=clims,
+    colormap=:bam,
+    height=Relative(0.8),
+    label=L"\log_{10}\left(|\Delta P_{eff}|\right)"
+)
+cb2a.alignmode = Mixed(right = 0)
+Label(glCol2[2,1], popfirst!(subfigureLabels), fontsize=24) 
+push!(axes, Axis(glCol2[3,1]))
+scatter!(axes[end],
+    log10.(Rᵢ2[Not(iᵖ2)]),
+    log10.(abs.(ΔpEff[Not(iᵖ2)])),
+    color=(:blue, 0.25)
+)
+scatter!(axes[end],
+    log10.(Rᵢ2[iᵖ2]),
+    log10.(abs.(ΔpEff[iᵖ2])),
+    color=(:red, 0.25)
+)
+lines!(axes[end],
+    log10.(Rᵢ2dummy),
+    log10.(0.008*1.0./(Rᵢ2dummy).^2),
+    color=(:black, 0.75),
+    linestyle=:dash
+)
 axes[end].ylabel = L"\log_{10}\left(|\Delta P_{eff}|\right)"
 axes[end].xlabel = L"\log_{10}\left(R_i\right)"
+axes[end].alignmode = Mixed(left=0)
 ylims!(axes[end], clims)
 xlims!(axes[end], (-0.6, 1.0))
 axes[end].xticks = (-0.6:0.6:0.6, string.(-0.6:0.6:0.6))
-Label(gl2b[2,1], popfirst!(subfigureLabels), fontsize=24) 
-colsize!(gl2b, 1, Relative(1.0))
-rowsize!(gl2b, 1, Relative(0.99))
-rowsize!(gl2b, 2, Relative(0.01))
+Label(glCol2[4,1], popfirst!(subfigureLabels), fontsize=24) 
 
-
+colsize!(glCol2a, 1, Relative(0.8))
+colsize!(glCol2a, 2, Relative(0.2))
+rowsize!(glCol2a, 1, Relative(1.0))
+colsize!(glCol2, 1, Relative(1.0))
+rowsize!(glCol2, 1, Relative(0.5))
+rowsize!(glCol2, 2, Relative(0.05))
+rowsize!(glCol2, 3, Relative(0.4))
+rowsize!(glCol2, 4, Relative(0.05))
 
 
 cellCentres1 = findCellCentresOfMass(R, A, B)
 cellCentres2 = findCellCentresOfMass(R2, A2, B2)
-
 cellradii2 = norm.([cellCentres2[i].-systemCOM2 for i=1:size(B2,1)])
 cellDummyDists2 = collect(maximum(cellradii2)/100:maximum(cellradii2)/100:maximum(cellradii2))
 vertexradii2 = norm.([R2[k].-systemCOM2 for k=1:size(A2,2)])
 vertexDummyDists2 = collect(maximum(vertexradii2)/100:maximum(vertexradii2)/100:maximum(vertexradii2))
-# edgeradii2 = norm.([𝐜ⱼ2[j].-systemCOM2 for j=1:size(A2,1)])
-# edgeDummyDists2 = collect(maximum(edgeradii2)/100:maximum(edgeradii2)/100:maximum(edgeradii2))
-# ΔRₖ = R2.-R 
 Δrᵢ = cellCentres2.-cellCentres1[Not(ablatedCells)]
-# Δrⱼ = 𝐜ⱼ2.-𝐜ⱼ1
-
-#%%
-
 directions = [normalize(Δrᵢ[i])⋅normalize(cellCentres2[i].-systemCOM2) for i=1:size(B2,1)]
-# maxDirections = maximum(abs.(directions))
-# directionsNormalised = 0.5.+directions./2.0
-# colours = [(:blue, directionsNormalised[i]) for i=1:I]
 climsDirection = (-1.0,1.0)
 
-gl3 = GridLayout(fig[1,3])
-push!(axes, Axis(gl3[1,1], aspect=DataAspect()))
-for i=1:size(B2,1)
-    poly!(axes[end], cellPolygons2[i], color=(:white, 0.0), strokewidth=1, strokecolor=(:black,0.1))
-end
-# arrowColours = [(:green, 0.2+0.8*norm(Δrᵢ[i])/maximum(norm.(Δrᵢ))) for i=1:I]
-# arrowColours = [(:green, norm(Δrᵢ[i])/maximum(norm.(Δrᵢ))) for i=1:I]
-# arrowColours = [(:green, 1.0) for i=1:I]
-arrows!(axes[end], Point{2,Float64}.(cellCentres2), Vec{2,Float64}.(Δrᵢ), color=directions, colormap=:bam, colorrange=climsDirection, lengthscale=20.0, align=:head)
+glCol3 = GridLayout(fig[1,3])
+glCol3a = GridLayout(glCol3[1,1])
+push!(axes, Axis(glCol3a[1,1], aspect=DataAspect()))
 hidedecorations!(axes[end])
 hidespines!(axes[end])
-Colorbar(gl3[1,2], colormap=:bam, colorrange=climsDirection, height=Relative(0.6), label=L"\cos\left(\theta\right)")
-Label(gl3[2,1:2], popfirst!(subfigureLabels), fontsize=24) 
-colsize!(gl3, 1, Relative(0.9))
-colsize!(gl3, 2, Relative(0.1))
-rowsize!(gl3, 1, Relative(0.95))
-rowsize!(gl3, 2, Relative(0.05))
-
-gl3b = GridLayout(fig[2,3])
-push!(axes, Axis(gl3b[1,1]))#, aspect=AxisAspect(1.25)))
-scatter!(axes[end], log10.(cellradii2), log10.(norm.(Δrᵢ)), color=directions, colormap=:bam, colorrange=climsDirection)
-lines!(axes[end], log10.(cellDummyDists2), log10.(0.02./cellDummyDists2), color=(:black, 0.75), linestyle=:dash)
+for i=1:size(B2,1)
+    poly!(axes[end], 
+        cellPolygons2[i], 
+        color=(:white, 0.0), 
+        strokewidth=1, 
+        strokecolor=(:black,0.1)
+    )
+end
+arrows2d!(axes[end], 
+    Point{2,Float64}.(cellCentres2), 
+    Vec{2,Float64}.(normalize.(Δrᵢ)./50.0), 
+    color=directions, 
+    colormap=:bam, 
+    colorrange=climsDirection, 
+    lengthscale=20.0, 
+    shaftwidth=5,
+    # align=:head
+)
+cb3a = Colorbar(glCol3a[1,2],
+    colormap=:bam,
+    colorrange=climsDirection,
+    height=Relative(0.8),
+    label=L"\cos\left(\theta\right)"
+)
+cb3a.alignmode = Mixed(right = 0)
+Label(glCol3[2,1], popfirst!(subfigureLabels), fontsize=24) 
+push!(axes, Axis(glCol3[3,1]))
+scatter!(axes[end], 
+    log10.(cellradii2), 
+    log10.(norm.(Δrᵢ)), 
+    color=directions, 
+    colormap=:bam, 
+    colorrange=climsDirection
+)
+lines!(axes[end],
+    log10.(cellDummyDists2),
+    log10.(0.02./cellDummyDists2),
+    color=(:black, 0.75),
+    linestyle=:dash
+)
 axes[end].xlabel = L"\log_{10}\left(R_i\right)"
 axes[end].ylabel = L"\log_{10}\left(|\Delta \mathbf{R}_i|\right)"
+axes[end].alignmode = Mixed(left = 0)
 ylims!(axes[end], (-4.2, -1.0))
 xlims!(axes[end], (-0.6, 1.0))
 axes[end].xticks = (-0.6:0.6:0.6, string.(-0.6:0.6:0.6))
-Label(gl3b[2,1], popfirst!(subfigureLabels), fontsize=24) 
-colsize!(gl3b, 1, Relative(1.0))
-rowsize!(gl3b, 1, Relative(0.99))
-rowsize!(gl3b, 2, Relative(0.01))
+Label(glCol3[4,1], popfirst!(subfigureLabels), fontsize=24) 
 
-rowsize!(fig.layout, 1, Relative(0.5))
-# rowsize!(fig.layout, 2, Relative(0.01))
-rowsize!(fig.layout, 2, Relative(0.5))
-# rowsize!(fig.layout, 4, Relative(0.01))
-# rowsize!(fig.layout, 3, Relative(0.32))
-# rowsize!(fig.layout, 6, Relative(0.01))
+colsize!(glCol3a, 1, Relative(0.8))
+colsize!(glCol3a, 2, Relative(0.2))
+rowsize!(glCol3a, 1, Relative(1.0))
+colsize!(glCol3, 1, Relative(1.0))
+rowsize!(glCol3, 1, Relative(0.5))
+rowsize!(glCol3, 2, Relative(0.05))
+rowsize!(glCol3, 3, Relative(0.4))
+rowsize!(glCol3, 4, Relative(0.05))
 
-colsize!(fig.layout, 1, Relative(0.32))
-colsize!(fig.layout, 2, Relative(0.32))
-colsize!(fig.layout, 3, Relative(0.32))
-
-# rowgap!(fig.layout, 1, Relative(-0.1))
-# rowgap!(fig.layout, 2, Relative(-0.1))
-# rowgap!(fig.layout, 3, Relative(-0.01))
+colsize!(fig.layout, 1, Relative(0.33)) 
+colsize!(fig.layout, 2, Relative(0.33))
+colsize!(fig.layout, 3, Relative(0.33))
+rowsize!(fig.layout, 1, Relative(1.0))
 
 resize_to_layout!(fig)
 
