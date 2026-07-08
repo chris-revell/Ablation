@@ -66,7 +66,7 @@ getRandomColor(seed) = RGB(rand(Xoshiro(seed),3)...)
 # R1 = reinterpret(SVector{2,Float64}, integ1.u)
 
 # dateString = "$(Dates.format(Dates.now(),"yy-mm-dd-HH-MM-SS"))"
-dateString = "25-12-02-16-58-52"
+dateString = "25-12-19-12-12-33"
 # !isdir(datadir("division", dateString)) ? mkpath(datadir("division", dateString)) : nothing 
 # jldsave(datadir("division", dateString, "$(dateString)_InitialSystem.jld2"); 
 #             integ1,
