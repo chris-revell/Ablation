@@ -85,14 +85,26 @@ end
 
 cellCentres = findCellCentresOfMass(R, matrices.A, matrices.B)
 
-peripheralCells = findPeripheralCells(matrices.B)
+𝐡 = hNetwork(R, matrices.A, matrices.B, matrices.F)
+# Stress tensors 
+σᵢ = σ(R, matrices.A, matrices.B, 𝐡)
+# Deviatoric stress 
+σDᵢ = [σᵢ[i] .- 0.5*tr(σᵢ[i]) for i=1:size(matrices.B,1)]
+σDSᵢ = 0.5.*(σDᵢ .+ transpose.(σDᵢ))
+# ~\ref{eq:shearstressexact}
+ζᵢ = [sqrt(-det(σDSᵢ[i])) for i=1:size(matrices.B,1)]
+p_eff = -0.5.*cocurlᶜ(R, matrices.A, matrices.B, 𝐡)
 systemCOM = sum(R)./size(matrices.B,1)
 radii = norm.([r.-systemCOM for r in cellCentres])
-orderedByRadius = sortperm(radii)
-testCells = rand(findall(x->x==0, peripheralCells), 10) # Find a random set of non-peripheral cells 
-# testCells = orderedByRadius[1:5:50] # Find a random set of non-peripheral cells 
 
-for i in testCells
+peripheralCells = findPeripheralCells(matrices.B)
+internalCells = peripheralCells.==0
+
+orderedByRadius = sortperm(radii[internalCells])
+orderedByPeff = sortperm(p_eff[internalCells])
+
+# for i in orderedCells[1:min(nPanels, length(orderedCells))]
+for i in orderedByPeff[1:12]
     if isfile(datadir("displacementFields", dateString, "$(dateString)_Ablated$(i).jld2"))
         # skip
     else
