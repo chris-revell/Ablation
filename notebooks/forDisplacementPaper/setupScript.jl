@@ -1,20 +1,19 @@
 
 
-nPanels = 12
-order = "PeffRising"
-# order = "PeffFalling"
-# order = "Radius"
-
 # dateString = "25-12-02-16-58-52"
 # dateString = "26-06-19-08-32-27"
-# dateString = "26-06-19-08-32-27"
-dateString = "26-07-07-16-49-05"
-# dateString = "26-06-19-08-32-27"
+# dateString = "26-07-07-16-49-05"
+# dateString = "26-08-27-12-48-37"
+dateString = "26-08-27-12-48-37_2"
+
+# order = "PeffRising"
+# order = "PeffFalling"
+order = "Radius"
 
 function ϕ(θs, p)
     out = []
     for (i, θ) in enumerate(θs)
-        tmp = p[1] + p[2]*cos(θ-p[3]) + p[4]*cos(2.0*(θ-p[5]))
+        tmp = p[1] + p[2]*cos(θ-p[3]) + p[4]*cos(2.0*θ-p[5])
         if abs(tmp) < 1.0
             push!(out, tmp)
         else
@@ -33,11 +32,7 @@ function r(radii, p)
     return out
 end
 
-# Establish a set of cells for which ablated and divided results have been created
-testFiles = filter(x->(occursin("Divided",x)||occursin("Ablated",x))&&occursin(".jld2",x), readdir(datadir("displacementFields", dateString)))
-dividedCells = parse.(Int64, [i[(length(dateString)+1+length("Divided"))+1:end-5] for i in testFiles if occursin("Divided", i)])
-ablatedCells = parse.(Int64, [i[(length(dateString)+1+length("Ablated"))+1:end-5] for i in testFiles if occursin("Ablated", i)])
-# testCells = dividedCells∩ablatedCells
+lossFunction(u, p) = ϕ(p[:,1], u).-p[:,2]
 
 # Import and process data
 importedData = load(datadir("displacementFields", dateString, "$(dateString)_InitialSystem.jld2");
@@ -45,7 +40,24 @@ importedData = load(datadir("displacementFields", dateString, "$(dateString)_Ini
                             "VertexModel.../VertexModelContainers.jl.VertexModelContainers.ParametersContainer" => ParametersContainer
                 )
             )
+# importedData = load(datadir("displacementFields", "quadraticPotentialNoPressureMultiples", "Large2", "Large2_testSystem.jld2");
+#                 typemap=Dict("VertexModel.../VertexModelContainers.jl.VertexModelContainers.MatricesContainer" => MatricesContainer, 
+#                             "VertexModel.../VertexModelContainers.jl.VertexModelContainers.ParametersContainer" => ParametersContainer
+#                 )
+#             )
+
 @unpack R, params, matrices = importedData
+
+# Establish a set of cells for which ablated and divided results have been created
+testFiles = filter(x->(occursin("Divided",x)||occursin("Ablated",x))&&occursin(".jld2",x), readdir(datadir("displacementFields", dateString)))
+dividedCellsAll = parse.(Int64, [i[(length(dateString)+1+length("Divided"))+1:end-5] for i in testFiles if occursin("Divided", i)])
+ablatedCellsAll = parse.(Int64, [i[(length(dateString)+1+length("Ablated"))+1:end-5] for i in testFiles if occursin("Ablated", i)])
+peripheralCellIndices = findall(x->x!=0, findPeripheralCells(matrices.B))
+dividedCells = setdiff(dividedCellsAll, peripheralCellIndices)
+ablatedCells = setdiff(ablatedCellsAll, peripheralCellIndices)
+# testCells = dividedCells∩ablatedCells
+
+centralCellThreshold = 0.3
 
 # Select which of the datasets to plot
 cellCentres = findCellCentresOfMass(R, matrices.A, matrices.B)
@@ -70,3 +82,4 @@ elseif order == "PeffFalling"
 elseif order=="Radius"     
     sortedOrder = sortperm(radii_ablated)
 end
+

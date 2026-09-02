@@ -28,37 +28,46 @@ deNovoSystem = false
 L₀_in = 3.0
 
 if deNovoSystem
-    integ0 = vertexModel(
-        nRows = 15,
-        nCycles = 3,
-        divisionToggle = 1,
-        outputToggle = 0,
-        frameDataToggle = 0,
-        frameImageToggle = 0,
-        energyModel = "quadratic",
-        γ = γ_in,
-        L₀ = L₀_in,
-    )
 
-    #%%
-    (params0, matrices0) = integ0.p 
-    # @unpack A, B = matrices 
-    R0 = reinterpret(SVector{2,Float64}, integ0.u)
+    integ0 = vertexModel(abstol = 1e-8,
+                    reltol = 1e-8,
+                    nRows=5,
+                    nCycles=6,
+                    pressureExternal=0.0,
+                    γ = γ_in,
+                    L₀ = L₀_in,
+                    energyModel = "quadratic",
+                    divisionToggle=1,
+                    printToggle=1,
+                    outputToggle=1,
+                    frameDataToggle=0,
+                    frameImageToggle=0,
+                    videoToggle=0,
+                    # setRandomSeed=123,                                
+                )
 
-    integ1 = vertexModel(
-        initialSystem = "argument",
-        nCycles = 1.0,
-        divisionToggle = 0,
-        outputToggle = 0,
-        frameDataToggle = 0,
-        frameImageToggle = 0,
-        energyModel = "quadratic",
-        R_in = R0,
-        A_in = matrices0.A, 
-        B_in = matrices0.B,
-        γ = params0.γ,
-        L₀ = params0.L₀,
-    )
+    R0 = reinterpret(SVector{2,Float64}, integ0.u) 
+    (params0, matrices0) = integ0.p
+    
+    integ1 = vertexModel(abstol = 1e-8,
+                        reltol = 1e-8,
+                        sstol = 3e-5,
+                        termSteadyState=true,                        
+                        initialSystem="argument",
+                        R_in=R0,
+                        A_in=matrices0.A,
+                        B_in=matrices0.B,
+                        pressureExternal=0.0,
+                        γ = params0.γ,
+                        L₀ = params0.L₀,
+                        energyModel = "quadratic",
+                        divisionToggle=0,                        
+                        printToggle=1,
+                        outputToggle=1,
+                        frameDataToggle=0,
+                        frameImageToggle=0,
+                        videoToggle=0,                       
+                    )
 
     dateString = "$(Dates.format(Dates.now(),"yy-mm-dd-HH-MM-SS"))"
     !isdir(datadir("displacementFields", dateString)) ? mkpath(datadir("displacementFields", dateString)) : nothing 
@@ -73,7 +82,10 @@ if deNovoSystem
 else
     # dateString = "26-06-05-15-08-01"
     # dateString = "26-06-19-08-32-27"
-    dateString = "26-07-07-16-49-05"
+    # dateString = "26-07-07-16-49-05"
+    # dateString = "26-06-19-08-32-27"
+    # dateString = "26-08-27-12-48-37"
+    dateString = "26-08-27-12-48-37_2"
     dataDict = load(datadir("displacementFields", dateString, "$(dateString)_InitialSystem.jld2");
                     typemap=Dict("VertexModel.../VertexModelContainers.jl.VertexModelContainers.MatricesContainer" => MatricesContainer, 
                                 "VertexModel.../VertexModelContainers.jl.VertexModelContainers.ParametersContainer" => ParametersContainer
@@ -98,33 +110,44 @@ systemCOM = sum(R)./size(matrices.B,1)
 radii = norm.([r.-systemCOM for r in cellCentres])
 
 peripheralCells = findPeripheralCells(matrices.B)
+peripheralCellIndices = findall(x->x!=0, peripheralCells)
 internalCells = peripheralCells.==0
 
 orderedByRadius = sortperm(radii[internalCells])
-orderedByPeff = sortperm(p_eff[internalCells])
+orderedByPeff = sortperm(p_eff[internalCells]; rev=true)
 
-# for i in orderedCells[1:min(nPanels, length(orderedCells))]
-for i in orderedByPeff[1:12]
+# for i in orderedByPeff[1:24]
+for i in rand(findall(x->x==1, internalCells), 12)
+    @show i
     if isfile(datadir("displacementFields", dateString, "$(dateString)_Ablated$(i).jld2"))
+        # skip
+    elseif i∈peripheralCellIndices
         # skip
     else
         println("Cell $i, ablated")
         Rtmp, Atmp, Btmp = ablateCells(R, matrices.A, matrices.B, [i])
-        integAblated = vertexModel(abstol = 1e-9,
-                            reltol = 1e-9,
-                            initialSystem="argument",
-                            divisionToggle=0,
-                            R_in=Rtmp,
-                            A_in=Atmp,
-                            B_in=Btmp,                            
-                            nCycles=1.0,
-                            outputToggle=0,
-                            energyModel="quadratic",
-                            γ = params.γ,
-                            L₀ = params.L₀,
-                        )
+
+        integAblated = vertexModel(abstol = 1e-8,
+                        reltol = 1e-8,
+                        sstol = 3e-5,
+                        termSteadyState=true,                        
+                        initialSystem="argument",
+                        # nCycles=0.5,
+                        R_in=Rtmp,
+                        A_in=Atmp,
+                        B_in=Btmp,
+                        pressureExternal=0.0,
+                        γ = params.γ,
+                        L₀ = params.L₀,
+                        energyModel = "quadratic",
+                        divisionToggle=0,                        
+                        printToggle=1,
+                        outputToggle=1,
+                        frameDataToggle=0,
+                        frameImageToggle=0,
+                        videoToggle=0,
+                    )
                         
-        #%%
         paramsAblated, matricesAblated = integAblated.p
         Rablated = reinterpret(SVector{2,Float64}, integAblated.u)
         Aablated = matricesAblated.A
@@ -132,11 +155,8 @@ for i in orderedByPeff[1:12]
         Fablated = matricesAblated.F
         Fmax = maximum(norm.(sum(Fablated, dims=2)))
         @show Fmax
-        # C = findC(A, B)
-        # centralCellVertices = R[findall(x->x!=0, C[i, :])]
-        ablationCOM = cellCentres[i] # sum(centralCellVertices)./length(centralCellVertices) 
+        ablationCOM = cellCentres[i] 
         jldsave(datadir("displacementFields", dateString, "$(dateString)_Ablated$(i).jld2"); 
-            # integAblated,
             Rablated,
             Aablated, 
             Bablated, 
@@ -147,23 +167,33 @@ for i in orderedByPeff[1:12]
     
     if isfile(datadir("displacementFields", dateString, "$(dateString)_Divided$(i).jld2"))
         # skip
+    elseif i∈peripheralCellIndices
+        # skip
     else
         println("Cell $i, divided")
         Rtmp, Atmp, Btmp, shortVec = divideCell(R, params, matrices, i)
-        integDivided = vertexModel(abstol = 1e-9,
-                            reltol = 1e-9,
-                            initialSystem="argument",
-                            divisionToggle=0,
-                            R_in=Rtmp,
-                            A_in=Atmp,
-                            B_in=Btmp,
-                            nCycles=0.5,
-                            outputToggle=0,
-                            energyModel="quadratic",
-                            γ = params.γ,
-                            L₀ = params.L₀,
-                        )
-        #%%
+
+        integDivided = vertexModel(abstol = 1e-8,
+                        reltol = 1e-8,
+                        sstol = 3e-5,
+                        termSteadyState=true,                        
+                        initialSystem="argument",
+                        # nCycles=0.5,
+                        R_in=Rtmp,
+                        A_in=Atmp,
+                        B_in=Btmp,
+                        pressureExternal=0.0,
+                        γ = params.γ,
+                        L₀ = params.L₀,
+                        energyModel = "quadratic",
+                        divisionToggle=0,                        
+                        printToggle=1,
+                        outputToggle=1,
+                        frameDataToggle=0,
+                        frameImageToggle=0,
+                        videoToggle=0,
+                    )
+        
         paramsDivided, matricesDivided = integDivided.p
         Rdivided = reinterpret(SVector{2,Float64}, integDivided.u)
         Adivided = matricesDivided.A
@@ -171,9 +201,7 @@ for i in orderedByPeff[1:12]
         Fdivided = matricesDivided.F
         Fmax = maximum(norm.(sum(Fdivided, dims=2)))
         @show Fmax
-        # C = findC(A, B)
-        # centralCellVertices = R[findall(x->x!=0, C[i, :])]
-        divisionCOM = cellCentres[i]  # sum(centralCellVertices)./length(centralCellVertices) 
+        divisionCOM = cellCentres[i] 
         jldsave(datadir("displacementFields", dateString, "$(dateString)_Divided$(i).jld2"); 
             Rdivided,
             Adivided, 
@@ -184,3 +212,63 @@ for i in orderedByPeff[1:12]
     end
 end
 
+
+
+# integ0 = vertexModel(abstol = 1e-9,
+#         reltol = 1e-9,
+#         nRows = 15,
+#         nCycles = 2,
+#         divisionToggle = 1,
+#         outputToggle = 0,
+#         # frameDataToggle = 0,
+#         # frameImageToggle = 0,
+#         energyModel = "quadratic",
+#         γ = γ_in,
+#         L₀ = L₀_in,
+#     )
+
+#  integ1 = vertexModel(abstol = 1e-9,
+#         reltol = 1e-9,
+#         initialSystem = "argument",
+#         nCycles = 0.5,
+#         pressureExternal=0.0,
+#         divisionToggle = 0,
+#         outputToggle = 0,
+#         # frameDataToggle = 0,
+#         # frameImageToggle = 0,
+#         energyModel = "quadratic",
+#         R_in = R0,
+#         A_in = matrices0.A, 
+#         B_in = matrices0.B,
+#         γ = params0.γ,
+#         L₀ = params0.L₀,
+#     )
+
+# integAblated = vertexModel(abstol = 1e-9,
+        #                     reltol = 1e-9,
+        #                     initialSystem="argument",
+        #                     divisionToggle=0,
+        #                     R_in=Rtmp,
+        #                     A_in=Atmp,
+        #                     B_in=Btmp,     
+        #                     pressureExternal=0.0,                       
+        #                     nCycles=0.5,
+        #                     outputToggle=1,
+        #                     energyModel="quadratic",
+        #                     γ = params.γ,
+        #                     L₀ = params.L₀,
+        #                 )
+
+        # integDivided = vertexModel(abstol = 1e-9,
+        #                     reltol = 1e-9,
+        #                     initialSystem="argument",
+        #                     divisionToggle=0,
+        #                     R_in=Rtmp,
+        #                     A_in=Atmp,
+        #                     B_in=Btmp,
+        #                     nCycles=0.5,
+        #                     outputToggle=1,
+        #                     energyModel="quadratic",
+        #                     γ = params.γ,
+        #                     L₀ = params.L₀,
+        #                 )

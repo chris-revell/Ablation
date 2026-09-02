@@ -21,7 +21,7 @@ using LsqFit
 
 CairoMakie.activate!()
 
-include(projectdir("notebooks", "forDisplacementPaper", "dateStringDefinition.jl"))
+include(projectdir("notebooks", "forDisplacementPaper", "setupScript.jl"))
 
 fittingParams = []
 divθs = []
@@ -43,7 +43,7 @@ for (i, ablatedCell) in enumerate(testCells)
     radiusVectorsAblated = ([cellCentres[i].-ablationCOM for i=1:size(matrices.B,1)])[Not(ablatedCell)]
     directionsAblated = normalize.(Δrᵢ).⋅normalize.(radiusVectorsAblated)
     θs = atan.(getindex.(radiusVectorsAblated, 1), getindex.(radiusVectorsAblated, 2))
-    centralcells = findall(x->norm(x)<0.33*maximum(norm.(radiusVectorsAblated)), radiusVectorsAblated)
+    centralcells = findall(x->norm(x)<centralCellThreshold*maximum(norm.(radiusVectorsAblated)), radiusVectorsAblated)
     θsTruncated = θs[centralcells]
     θsSorted = CircularArray(sort(θsTruncated))
     radiusVectorsSorted = CircularArray(radiusVectorsAblated[sortperm(θsTruncated)])
