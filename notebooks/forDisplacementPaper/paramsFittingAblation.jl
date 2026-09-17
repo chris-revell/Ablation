@@ -26,16 +26,6 @@ CairoMakie.activate!()
 
 include(projectdir("notebooks", "forDisplacementPaper", "setupScript.jl"))
 
-# df = DataFrame(i=Int64[],
-#     a=Float64[], 
-#     b = Float64[], 
-#     c = Float64[], 
-#     d = Float64[], 
-#     e = Float64[],
-#     divθ = Float64[],
-#     ζᵢ = Float64[],
-#     Peff = Float64[],
-# )
 is = Int64[]
 as = Float64[]
 bs = Float64[]

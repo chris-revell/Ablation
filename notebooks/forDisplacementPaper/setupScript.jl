@@ -23,6 +23,19 @@ function ϕ(θs, p)
     return out
 end
 
+function ϕReduced(θs, p)
+    out = []
+    for (i, θ) in enumerate(θs)
+        tmp = p[1] + p[2]*cos(2.0*θ-p[3])
+        if abs(tmp) < 1.0
+            push!(out, tmp)
+        else
+            push!(out, sign(tmp)*1.0)
+        end
+    end
+    return out
+end
+
 function r(radii, p)
     out = []
     for (i, r) in enumerate(radii)
@@ -33,6 +46,7 @@ function r(radii, p)
 end
 
 lossFunction(u, p) = ϕ(p[:,1], u).-p[:,2]
+lossFunctionReduced(u, p) = ϕReduced(p[:,1], u).-p[:,2]
 
 # Import and process data
 importedData = load(datadir("displacementFields", dateString, "$(dateString)_InitialSystem.jld2");

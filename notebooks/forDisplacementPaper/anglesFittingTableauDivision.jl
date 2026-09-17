@@ -52,18 +52,18 @@ for dividedCell in (dividedCells[sortedOrder])[1:min(nPanels, length(dividedCell
                 )
                 
     @unpack Rdivided, Adivided, Bdivided, Fdivided, divisionCOM = importedDataDivided
-    Idivided = size(Bdivided, 1)
+    Inew = size(Bdivided, 1)
     cellCentresDivided = findCellCentresOfMass(Rdivided, Adivided, Bdivided)
     cellPolygonsDivided = findCellPolygons(Rdivided, Adivided, Bdivided)
     Δrᵢ = cellCentresDivided[1:end-1].-cellCentres
     radiusVectorsDivided = ([cellCentres[i].-divisionCOM for i=1:size(matrices.B,1)])
     directionsDivided = normalize.(Δrᵢ).⋅normalize.(radiusVectorsDivided)
     θs = atan.(getindex.(radiusVectorsDivided, 1), getindex.(radiusVectorsDivided, 2))
-    centralcells = [i for i in findall(x->norm(x)<centralCellThreshold*maximum(norm.(radiusVectorsDivided)), radiusVectorsDivided) if i∉[dividedCell, Idivided]]
+    centralcells = [i for i in findall(x->norm(x)<centralCellThreshold*maximum(norm.(radiusVectorsDivided)), radiusVectorsDivided) if i∉[dividedCell, Inew]]
     
     # Monolayer visualisation
     for i=1:size(Bdivided,1)
-        if i∈[dividedCell, Idivided]
+        if i∈[dividedCell, Inew]
             poly!(axes[end], cellPolygonsDivided[i], color=(:black,0.1), strokewidth=1, strokecolor=(:black,0.1))
         elseif i∈centralcells
             poly!(axes[end], cellPolygonsDivided[i], color=directionsDivided[i], colormap=:managua, colorrange=(-1.0,1.0), strokewidth=1, strokecolor=(:black,0.1))
